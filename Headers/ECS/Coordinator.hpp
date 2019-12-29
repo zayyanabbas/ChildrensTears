@@ -26,7 +26,6 @@ namespace ChildrensTears {
         void addComponent(EntityID entity, T data) {
             comManager->addComponent<T>(entity, data);
 
-            // THIS ONE DON'T FORGET OBON
             auto signature = entManager->getSignature(entity);
             signature.set(comManager->getComponentType<T>(), true);
             
@@ -67,6 +66,10 @@ namespace ChildrensTears {
         template <typename T>
         uint8_t getComponentType() {
             return comManager->getComponentType<T>();
+        }
+
+        uint32_t getLatestID() {
+            return entManager->size;
         }
     };
 }

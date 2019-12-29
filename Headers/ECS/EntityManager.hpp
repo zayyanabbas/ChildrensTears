@@ -13,10 +13,10 @@ namespace ChildrensTears {
     class EntityManager {
     private:
         std::vector<Entity> entities;
-
+    public:
         // Total amount of entities in the manager
         EntityID size = 0;
-    public:
+
         void createEntity() {
             // Check if the total entities is greater than the maximum number of entities allowed.
             assert(size < Constants::MaxEntities && "Reached maximum entity limit");

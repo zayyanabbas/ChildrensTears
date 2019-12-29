@@ -1,1 +1,11 @@
+# Custom build script in VSCode
 ./.vscode/tasks.json
+
+# Example code
+./Source/test_code.cpp
+
+# Build result
+./ChildrensTears.o
+
+# Assets for test code
+./Assets/

@@ -35,7 +35,7 @@ namespace ChildrensTears {
 
         void addToEntity(EntityID ID, Component data) {
             assert(ID < Constants::MaxEntities && "Invalid Entity ID");
-            componentArray[ID].data = data;            
+            componentArray[ID].data = data;      
         }
 
         void removeFromEntity(EntityID ID) {
