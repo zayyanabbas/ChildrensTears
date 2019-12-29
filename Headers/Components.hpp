@@ -4,15 +4,20 @@
 
 namespace ChildrensTears {
     struct PhysicsComponent {
-        sf::Vector2f resultantForce;
-        sf::Vector2f acceleration;
-        sf::Vector2f velocity;
-
+        Vec2<float> resultantForce;
+        Vec2<float> acceleration;
+        Vec2<float> velocity;
         float mass = 1.0;
     };
 
+    struct RigidBody {
+        float g_accel;
+        Vec2<int> size;
+    };
+
     struct TransformComponent {
-        sf::Vector2f position;
+        Vec2<float> position;
+        Vec2<float> scale;
         float angle;
     };
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "Components.hpp"
 #include "ECS/Coordinator.hpp"
+#include <iostream>
 
 extern ChildrensTears::Coordinator coord;
 
@@ -12,7 +13,7 @@ namespace ChildrensTears {
                 auto& physics = coord.getComponent<PhysicsComponent>(entity);
                 auto& transform = coord.getComponent<TransformComponent>(entity);
 
-                physics.acceleration += physics.resultantForce/physics.mass;
+                physics.acceleration += (physics.resultantForce/physics.mass);
                 physics.velocity += physics.acceleration;
                 
                 transform.position += physics.velocity * delT;
@@ -27,7 +28,7 @@ namespace ChildrensTears {
                 auto& transform = coord.getComponent<TransformComponent>(entity);
                 auto& render = coord.getComponent<RenderComponent>(entity);
 
-                render.sprite.setPosition(transform.position);
+                render.sprite.setPosition(transform.position.x, transform.position.y);
 
                 renderArea->draw(render.sprite);
             }
