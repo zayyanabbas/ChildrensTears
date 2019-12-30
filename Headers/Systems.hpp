@@ -34,4 +34,16 @@ namespace ChildrensTears {
             }
         }
     };
+
+    class RigidbodySystem : public bSystem {
+    public:
+        void update(float deltaT) {
+            for (auto& entity : entities) {
+                auto& transform = coord.getComponent<TransformComponent>(entity);
+                auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
+
+                rigidbody.shape->position = transform.position;
+            }
+        }
+    };
 }
