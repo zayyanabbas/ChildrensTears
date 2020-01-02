@@ -35,6 +35,18 @@ namespace ChildrensTears {
         }
     };
 
+    class TransformSystem : public bSystem {
+    public:
+        void sort() {
+            std::sort(entities.begin(), entities.end(), [](uint32_t a, uint32_t b) {
+                auto& transform_a = coord.getComponent<TransformComponent>(a);
+                auto& transform_b = coord.getComponent<TransformComponent>(b);
+
+                return transform_a.position > transform_b.position;
+            });
+        } 
+    };
+
     class RigidbodySystem : public bSystem {
     public:
         void update(float deltaT) {
@@ -42,7 +54,12 @@ namespace ChildrensTears {
                 auto& transform = coord.getComponent<TransformComponent>(entity);
                 auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
 
+                // Update all the values
                 rigidbody.shape->position = transform.position;
+                rigidbody.angle = transform.angle;
+                rigidbody.scale = transform.scale;
+
+
             }
         }
     };

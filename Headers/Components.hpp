@@ -1,5 +1,6 @@
 #pragma once
 #include "./ECS/Coordinator.hpp"
+#include "Utils/Vecs.hpp"
 #include <SFML/Graphics.hpp>
 #include <math.h>
 
