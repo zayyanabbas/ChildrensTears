@@ -23,7 +23,7 @@ namespace ChildrensTears {
         EntityID size;
     public:
         ComponentArray() {
-            // This is needed so that an entity's ID is the same
+            // This is needed so that an entity's ID is the same 
             // as where it's placed on the component array
             componentArray.resize(Constants::MaxEntities);
 
