@@ -1,8 +1,8 @@
 # Custom build script in VSCode
-./.vscode/tasks.json
+./.vscode/
 
 # Example code
-./Source/test_code.cpp
+./Source/
 
 # Build result
 ./ChildrensTears.o

@@ -1,3 +1,4 @@
+#include <bits/stdc++.h>
 #pragma once
 
 namespace ChildrensTears {
@@ -274,5 +275,118 @@ namespace ChildrensTears {
         }
     };
 
-    using Colour = Vec4<int>;
+    using Position = Vec2<float>;
+    using Size = Vec2<int>;
+    using RGBA = Vec4<int>;
+    using RGB = Vec3<int>;
+
+    struct AABB {
+        Position position;
+        Size size;
+
+        AABB() = default;
+
+        AABB(Position _pos, Size _size) {
+            size = _size;
+            position = _pos;
+        }
+
+        bool checkIntersection(AABB collider) {
+            return (position.x < collider.position.x + collider.size.x &&
+                    position.x + size.x > collider.position.x          &&
+                    position.y < collider.position.y + collider.size.y &&
+                    position.y + size.y > collider.position.y          );
+        }
+
+        bool containsPoint(Position point) {
+            return (position.x < point.x          &&
+                    position.x + size.x > point.x &&
+                    position.y < point.y          &&
+                    position.y + size.y > point.y );
+        }
+    };
+
+    template <typename T>
+    class QuadTree {
+    private:
+        AABB boundary;
+
+        std::unique_ptr<QuadTree> topLeft;
+        std::unique_ptr<QuadTree> topRight;
+        std::unique_ptr<QuadTree> bottomLeft;
+        std::unique_ptr<QuadTree> bottomRight;
+
+        std::vector<T> points;
+
+        void subdivide() {
+            topLeft = std::make_unique<QuadTree>(boundary.position, boundary.size/2);
+            topRight = std::make_unique<QuadTree>(Position(boundary.position.x + boundary.size.x/2, boundary.position.y), boundary.size/2);
+            bottomLeft = std::make_unique<QuadTree>(Position(boundary.position.x, boundary.position.y + boundary.size.y/2), boundary.size/2);
+            bottomRight = std::make_unique<QuadTree>(Position(boundary.position.x + boundary.size.x/2, boundary.position.y + boundary.size.y/2), boundary.size/2);
+        }
+
+        std::vector<T> queryRange(AABB range) {
+            std::vector<T> ret;
+
+            if (boundary.checkIntersection(range) == false) {
+                return ret;
+            }
+
+            for (int i = 0; i < points.size(); ++i) {
+                if (range.containsPoint(points[i])) {
+                    ret.push_back(points[i]);
+                }
+            }
+
+            if (topRight == nullptr) {
+                return ret;
+            }
+
+            for (auto& i : topLeft->queryRange(range)) {
+                ret.push_back(i);
+            }
+            for (auto& i : topRight->queryRange(range)) {
+                ret.push_back(i);
+            }
+            for (auto& i : bottomLeft->queryRange(range)) {
+                ret.push_back(i);
+            }
+            for (auto& i : bottomRight->queryRange(range)) {
+                ret.push_back(i);
+            }
+
+            return ret;
+        }
+
+        bool insert(Position pos, T point) {
+            if (boundary.containsPoint(pos) == false) {
+                return false;
+            }
+
+            if (points.size() < MaxChildren && topLeft == nullptr) {
+                points.push_back(point);
+                return true;
+            }
+
+            if (topLeft == nullptr) subdivide();
+
+            if (topLeft->insert(pos) == true) return true;
+            if (topRight->insert(pos) == true) return true;
+            if (bottomLeft->insert(pos) == true) return true;
+            if (bottomRight->insert(pos) == true) return true;
+
+            return false;
+        }
+    public:
+        const int MaxChildren = 4;
+
+        QuadTree(AABB _boundary) {
+            boundary = _boundary;
+
+            topLeft = nullptr;
+            topRight = nullptr;
+            bottomLeft = nullptr;
+            bottomRight = nullptr;
+        }
+    };
 }
