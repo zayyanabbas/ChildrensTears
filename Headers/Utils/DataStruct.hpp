@@ -306,35 +306,41 @@ namespace ChildrensTears {
         }
     };
 
-    template <typename T>
     class QuadTree {
     private:
         AABB boundary;
 
+        // 4 children nodes
         std::unique_ptr<QuadTree> topLeft;
         std::unique_ptr<QuadTree> topRight;
         std::unique_ptr<QuadTree> bottomLeft;
         std::unique_ptr<QuadTree> bottomRight;
 
-        std::vector<T> points;
+        // This is templated so I can have multiple data types in the QuadTree
+        std::vector<AABB> boxes;
 
+        // Splits into 4 different parts
         void subdivide() {
-            topLeft = std::make_unique<QuadTree>(boundary.position, boundary.size/2);
-            topRight = std::make_unique<QuadTree>(Position(boundary.position.x + boundary.size.x/2, boundary.position.y), boundary.size/2);
-            bottomLeft = std::make_unique<QuadTree>(Position(boundary.position.x, boundary.position.y + boundary.size.y/2), boundary.size/2);
-            bottomRight = std::make_unique<QuadTree>(Position(boundary.position.x + boundary.size.x/2, boundary.position.y + boundary.size.y/2), boundary.size/2);
+            topLeft = std::make_unique<QuadTree>(AABB(boundary.position, boundary.size/2));
+            topRight = std::make_unique<QuadTree>(AABB(Position(boundary.position.x + boundary.size.x/2, boundary.position.y), boundary.size/2));
+            bottomLeft = std::make_unique<QuadTree>(AABB(Position(boundary.position.x, boundary.position.y + boundary.size.y/2), boundary.size/2));
+            bottomRight = std::make_unique<QuadTree>(AABB(Position(boundary.position.x + boundary.size.x/2, boundary.position.y + boundary.size.y/2), boundary.size/2));
         }
 
-        std::vector<T> queryRange(AABB range) {
-            std::vector<T> ret;
+        // Check for all of type T, in your range
+    public:
+        const int MaxChildren = 4;
+
+        std::vector<AABB> queryRange(AABB range) {
+            std::vector<AABB> ret;
 
             if (boundary.checkIntersection(range) == false) {
                 return ret;
             }
 
-            for (int i = 0; i < points.size(); ++i) {
-                if (range.containsPoint(points[i])) {
-                    ret.push_back(points[i]);
+            for (int i = 0; i < boxes.size(); ++i) {
+                if (range.containsPoint(boxes[i].position)) {
+                    ret.push_back(boxes[i]);
                 }
             }
 
@@ -358,27 +364,25 @@ namespace ChildrensTears {
             return ret;
         }
 
-        bool insert(Position pos, T point) {
+        bool insert(Position pos, AABB box) {
             if (boundary.containsPoint(pos) == false) {
                 return false;
             }
 
-            if (points.size() < MaxChildren && topLeft == nullptr) {
-                points.push_back(point);
+            if (boxes.size() < MaxChildren && topLeft == nullptr) {
+                boxes.push_back(box);
                 return true;
             }
 
             if (topLeft == nullptr) subdivide();
 
-            if (topLeft->insert(pos) == true) return true;
-            if (topRight->insert(pos) == true) return true;
-            if (bottomLeft->insert(pos) == true) return true;
-            if (bottomRight->insert(pos) == true) return true;
+            if (topLeft->insert(pos, box) == true) return true;
+            if (topRight->insert(pos, box) == true) return true;
+            if (bottomLeft->insert(pos, box) == true) return true;
+            if (bottomRight->insert(pos, box) == true) return true;
 
             return false;
         }
-    public:
-        const int MaxChildren = 4;
 
         QuadTree(AABB _boundary) {
             boundary = _boundary;
@@ -388,5 +392,6 @@ namespace ChildrensTears {
             bottomLeft = nullptr;
             bottomRight = nullptr;
         }
+        QuadTree() = default;
     };
 }
