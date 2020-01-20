@@ -1,6 +1,7 @@
 #pragma once
 #include "Components.hpp"
 #include "ECS/Coordinator.hpp"
+#include "Utils/DataStruct.hpp"
 #include <iostream>
 
 extern ChildrensTears::Coordinator coord;
@@ -35,21 +36,14 @@ namespace ChildrensTears {
         }
     };
 
-    class TransformSystem : public bSystem {
-    public:
-        void sort() {
-            std::sort(entities.begin(), entities.end(), [](EntityID a, EntityID b) {
-                auto& transform_a = coord.getComponent<TransformComponent>(a);
-                auto& transform_b = coord.getComponent<TransformComponent>(b);
-
-                return transform_a.position.y > transform_b.position.y;
-            });
-        }
-    };
-
     class RigidbodySystem : public bSystem {
+    private:
+        std::unique_ptr<QuadTree<RigidbodyComponent>> quad;
     public:
         void update(float deltaT) {
+            // Temp while waiting for frustrum culling
+            quad = std::make_unique<QuadTree<RigidbodyComponent>>(QuadTree<RigidbodyComponent>(AABB(Position(0,0),Size(1000,1000))));
+
             for (auto& entity : entities) {
                 auto& transform = coord.getComponent<TransformComponent>(entity);
                 auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
@@ -58,7 +52,20 @@ namespace ChildrensTears {
                 rigidbody.position = transform.position;
                 rigidbody.angle    = transform.angle;
                 rigidbody.scale    = transform.scale;
+
+                // Recalculate the quadtree
+                quad->insert(rigidbody.position, rigidbody);
+           }
+        }
+
+        bool checkCollision(AABB range, EntityID entity) {
+            auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
+            for (auto& c : quad->queryRange(range)) {
+                if (AABB(rigidbody.position,rigidbody.size).checkIntersection(AABB(c.position,c.size))) {
+                    return true;
+                }
             }
+            return false;
         }
     };
 }
