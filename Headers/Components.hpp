@@ -20,6 +20,8 @@ namespace ChildrensTears {
     };
 
     struct RigidbodyComponent {
+        bool hasGravity = false;
+
         Position position;
         Size size;
         Vec2<float> scale;
@@ -32,10 +34,12 @@ namespace ChildrensTears {
 
         float g_accel;
         float angle;
+        float mass = 1;
     };
 
     struct TransformComponent {
         Position position;
+        Size size;
         Vec2<float> scale;
 
         TransformComponent() {
