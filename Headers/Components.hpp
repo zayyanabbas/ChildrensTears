@@ -9,22 +9,40 @@ namespace ChildrensTears {
         Vec2<float> resultantForce;
         Vec2<float> acceleration;
         Vec2<float> velocity;
+
+        PhysicsComponent() {
+            resultantForce = Vec2<float>(0,0);
+            acceleration   = Vec2<float>(0,0);
+            velocity       = Vec2<float>(0,0);
+        }
+
         float mass = 1.0;
     };
 
     struct RigidbodyComponent {
-        float g_accel;
-        
         Position position;
         Size size;
-
         Vec2<float> scale;
+        
+        RigidbodyComponent() {
+            position = Position(0,0);
+            size     = Size(0,0);
+            scale    = Vec2<float>(1,1);
+        }
+
+        float g_accel;
         float angle;
     };
 
     struct TransformComponent {
-        Vec2<float> position;
+        Position position;
         Vec2<float> scale;
+
+        TransformComponent() {
+            position = Position(0,0);
+            scale    = Vec2<float>(1,1);
+        }
+
         float angle;
     };
 
