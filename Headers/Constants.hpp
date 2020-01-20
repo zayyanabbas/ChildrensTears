@@ -5,7 +5,7 @@
 namespace ChildrensTears {
     namespace Constants {
         constexpr uint32_t MaxEntities = 2;
-        constexpr uint8_t MaxComponents = 3;
+        constexpr uint8_t MaxComponents = 4;
         constexpr double pi = 3.1415;
     }
 
