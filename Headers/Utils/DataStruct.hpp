@@ -306,6 +306,7 @@ namespace ChildrensTears {
         }
     };
 
+    template<typename T>
     class QuadTree {
     private:
         AABB boundary;
@@ -317,7 +318,7 @@ namespace ChildrensTears {
         std::unique_ptr<QuadTree> bottomRight;
 
         // This is templated so I can have multiple data types in the QuadTree
-        std::vector<AABB> boxes;
+        std::vector<T> boxes;
 
         // Splits into 4 different parts
         void subdivide() {
@@ -331,8 +332,8 @@ namespace ChildrensTears {
     public:
         const int MaxChildren = 4;
 
-        std::vector<AABB> queryRange(AABB range) {
-            std::vector<AABB> ret;
+        std::vector<T> queryRange(AABB range) {
+            std::vector<T> ret;
 
             if (boundary.checkIntersection(range) == false) {
                 return ret;
@@ -364,7 +365,7 @@ namespace ChildrensTears {
             return ret;
         }
 
-        bool insert(Position pos, AABB box) {
+        bool insert(Position pos, T box) {
             if (boundary.containsPoint(pos) == false) {
                 return false;
             }
