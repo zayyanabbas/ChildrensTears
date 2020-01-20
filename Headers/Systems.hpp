@@ -47,25 +47,29 @@ namespace ChildrensTears {
             for (auto& entity : entities) {
                 auto& transform = coord.getComponent<TransformComponent>(entity);
                 auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
+                auto& physics   = coord.getComponent<PhysicsComponent>(entity);
 
                 // Update all the values
                 rigidbody.position = transform.position;
                 rigidbody.angle    = transform.angle;
                 rigidbody.scale    = transform.scale;
+                rigidbody.size     = transform.size;
+                rigidbody.mass     = physics.mass;
 
                 // Recalculate the quadtree
                 quad->insert(rigidbody.position, rigidbody);
            }
         }
 
-        bool checkCollision(AABB range, EntityID entity) {
+        std::vector<RigidbodyComponent> checkCollision(AABB range, EntityID entity) {
             auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
+            std::vector<RigidbodyComponent> allComponents;
             for (auto& c : quad->queryRange(range)) {
                 if (AABB(rigidbody.position,rigidbody.size).checkIntersection(AABB(c.position,c.size))) {
-                    return true;
+                    allComponents.push_back(c);
                 }
             }
-            return false;
+            return allComponents;
         }
     };
 }
