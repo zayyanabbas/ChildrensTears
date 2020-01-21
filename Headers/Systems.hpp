@@ -11,13 +11,12 @@ namespace ChildrensTears {
     public:
         void update(float delT) {
             for (auto& entity : entities) {
-                auto& physics = coord.getComponent<PhysicsComponent>(entity);
-                auto& transform = coord.getComponent<TransformComponent>(entity);
+                auto physics   = &coord.getComponent<PhysicsComponent>(entity);
+                auto transform = &coord.getComponent<TransformComponent>(entity);
 
-                physics.acceleration += (physics.resultantForce/physics.mass);
-                physics.velocity += physics.acceleration;
-                
-                transform.position += physics.velocity * delT;
+                physics->acceleration += (physics->resultantForce/physics->mass);
+                physics->velocity += physics->acceleration;
+                transform->position += physics->velocity * delT;
             }
         }
     };
@@ -26,12 +25,12 @@ namespace ChildrensTears {
     public:
         void drawRenderables(sf::RenderTarget* renderArea) {
             for (auto& entity : entities) {
-                auto& transform = coord.getComponent<TransformComponent>(entity);
-                auto& render = coord.getComponent<RenderComponent>(entity);
+                auto transform = &coord.getComponent<TransformComponent>(entity);
+                auto render    = &coord.getComponent<RenderComponent>(entity);
 
-                render.sprite.setPosition(transform.position.x, transform.position.y);
+                render->sprite.setPosition(transform->position.x, transform->position.y);
 
-                renderArea->draw(render.sprite);
+                renderArea->draw(render->sprite);
             }
         }
     };
@@ -45,28 +44,35 @@ namespace ChildrensTears {
             quad = std::make_unique<QuadTree<RigidbodyComponent>>(QuadTree<RigidbodyComponent>(AABB(Position(0,0),Size(1000,1000))));
 
             for (auto& entity : entities) {
-                auto& transform = coord.getComponent<TransformComponent>(entity);
-                auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
-                auto& physics   = coord.getComponent<PhysicsComponent>(entity);
+                auto transform = &coord.getComponent<TransformComponent>(entity);
+                auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
+                auto physics   = &coord.getComponent<PhysicsComponent>(entity);
 
                 // Update all the values
-                rigidbody.position = transform.position;
-                rigidbody.angle    = transform.angle;
-                rigidbody.scale    = transform.scale;
-                rigidbody.size     = transform.size;
-                rigidbody.mass     = physics.mass;
+                rigidbody->position = transform->position;
+                rigidbody->angle    = transform->angle;
+                rigidbody->scale    = transform->scale;
+                rigidbody->size     = transform->size;
+                rigidbody->mass     = physics->mass;
 
                 // Recalculate the quadtree
-                quad->insert(rigidbody.position, rigidbody);
+                quad->insert(rigidbody->position, *rigidbody);
+
+                if (rigidbody->hasGravity == true) {
+                    physics->resultantForce.y += rigidbody->mass/rigidbody->g_accel;
+                }
            }
         }
 
         std::vector<RigidbodyComponent> checkCollision(AABB range, EntityID entity) {
-            auto& rigidbody = coord.getComponent<RigidbodyComponent>(entity);
+            auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
             std::vector<RigidbodyComponent> allComponents;
+
             for (auto& c : quad->queryRange(range)) {
-                if (AABB(rigidbody.position,rigidbody.size).checkIntersection(AABB(c.position,c.size))) {
-                    allComponents.push_back(c);
+                if (!(c.position == rigidbody->position)) {
+                    if (AABB(rigidbody->position,rigidbody->size).checkIntersection(AABB(c.position,c.size))) {
+                        allComponents.push_back(c);
+                    }
                 }
             }
             return allComponents;
