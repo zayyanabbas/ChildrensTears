@@ -77,14 +77,9 @@ namespace ChildrensTears {
             x *= multiplier;
             y *= multiplier;
         }
-
-        bool operator>(Vec2 other) {
-            // If the x is greater, return true. If it's equal, it depends on the y
-            return (x > other.x) ? true : ((x == other.x && y > other.y) ? true : false);
-        }
-
-        bool operator<(Vec2 other) {
-            return (x < other.x) ? true : ((x == other.x && y < other.y) ? true : false);
+        
+        bool operator==(Vec2 other) {
+            return x == other.x && y == other.y;
         }
     };
 
