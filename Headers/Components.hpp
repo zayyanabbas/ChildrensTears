@@ -32,7 +32,7 @@ namespace ChildrensTears {
             scale    = Vec2<float>(1,1);
         }
 
-        float g_accel;
+        float g_accel = 150;
         float angle;
         float mass = 1;
     };
