@@ -14,7 +14,7 @@ namespace ChildrensTears {
                 auto physics   = &coord.getComponent<PhysicsComponent>(entity);
                 auto transform = &coord.getComponent<TransformComponent>(entity);
 
-                physics->acceleration += (physics->resultantForce/physics->mass);
+                physics->acceleration = (physics->resultantForce/physics->mass);
                 physics->velocity += physics->acceleration;
                 transform->position += physics->velocity * delT;
             }
@@ -59,7 +59,7 @@ namespace ChildrensTears {
                 quad->insert(rigidbody->position, *rigidbody);
 
                 if (rigidbody->hasGravity == true) {
-                    physics->acceleration.y += rigidbody->mass*rigidbody->g_accel;
+                    physics->resultantForce.y += rigidbody->mass*rigidbody->g_accel;
                 }
            }
         }
@@ -76,6 +76,15 @@ namespace ChildrensTears {
                 }
             }
             return allComponents;
+        }
+
+        void onCollision(RigidbodyComponent collider, EntityID id) { 
+            auto phys     = &coord.getComponent<PhysicsComponent>(id);
+            auto col_phys = &coord.getComponent<PhysicsComponent>(collider.id);
+
+            if (collider.isStatic == false) {
+                col_phys->resultantForce += (col_phys->resultantForce - phys->resultantForce);
+            }
         }
     };
 }
