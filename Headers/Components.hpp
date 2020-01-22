@@ -22,6 +22,7 @@ namespace ChildrensTears {
 
     struct RigidbodyComponent {
         bool hasGravity = false;
+        bool isStatic = false;
 
         Position position;
         Size size;
@@ -33,7 +34,7 @@ namespace ChildrensTears {
             scale    = Vec2<float>(1,1);
         }
 
-        float g_accel = 150;
+        float g_accel = 0.1;
         float angle;
         float mass = 1;
 
