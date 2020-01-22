@@ -83,7 +83,7 @@ namespace ChildrensTears {
             auto col_phys = &coord.getComponent<PhysicsComponent>(collider.id);
 
             if (collider.isStatic == false) {
-                col_phys->resultantForce += (col_phys->resultantForce - phys->resultantForce);
+                col_phys->resultantForce -= (col_phys->resultantForce - phys->resultantForce);
             }
         }
     };
