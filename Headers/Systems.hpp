@@ -59,7 +59,7 @@ namespace ChildrensTears {
                 quad->insert(rigidbody->position, *rigidbody);
 
                 if (rigidbody->hasGravity == true) {
-                    physics->resultantForce.y += rigidbody->mass/rigidbody->g_accel;
+                    physics->acceleration.y += rigidbody->mass*rigidbody->g_accel;
                 }
            }
         }
