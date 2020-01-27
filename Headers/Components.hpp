@@ -10,7 +10,7 @@ namespace ChildrensTears {
         Vec2<float> velocity{0,0};
     
         float mass = 1.0;
-        uint32_t id;
+        std::shared_ptr<uint32_t> id;
     };
 
     struct RigidbodyComponent {
@@ -32,7 +32,7 @@ namespace ChildrensTears {
         float angle;
         float mass = 1;
 
-        uint32_t id;
+        std::shared_ptr<uint32_t> id;
     };
 
     struct TransformComponent {
@@ -46,7 +46,7 @@ namespace ChildrensTears {
         }
 
         float angle;
-        uint32_t id;
+        std::shared_ptr<uint32_t> id;
     };
 
     struct RenderComponent {
@@ -57,6 +57,6 @@ namespace ChildrensTears {
             assert(texture.loadFromFile(path) == true && "Can't find image file");
             sprite.setTexture(texture);
         }
-        uint32_t id;
+        std::shared_ptr<uint32_t> id;
     };
 }
