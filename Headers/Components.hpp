@@ -50,13 +50,15 @@ namespace ChildrensTears {
     };
 
     struct RenderComponent {
-        sf::Texture texture;
+        std::shared_ptr<sf::Texture> texture;
         sf::Sprite sprite;
 
         void loadTexture(const char* path) {
-            assert(texture.loadFromFile(path) == true && "Can't find image file");
-            sprite.setTexture(texture);
+            texture = std::make_shared<sf::Texture>();
+            assert(texture->loadFromFile(path) == true && "Can't find image file");
+            sprite.setTexture(*texture);
         }
+
         std::shared_ptr<uint32_t> id;
     };
 }
