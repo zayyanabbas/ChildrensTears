@@ -18,15 +18,9 @@ namespace ChildrensTears {
         bool hasGravity = false;
         bool isStatic = false;
 
-        Position position;
-        Size size;
-        Vec2<float> scale;
-        
-        RigidbodyComponent() {
-            position = Position(0,0);
-            size     = Size(0,0);
-            scale    = Vec2<float>(1,1);
-        }
+        Position position{0,0};
+        Size size{0,0};
+        Vec2<float> scale{1,1};
 
         constexpr static float g_accel = 1;
         float angle;
@@ -36,16 +30,12 @@ namespace ChildrensTears {
     };
 
     struct TransformComponent {
-        Position position;
-        Size size;
-        Vec2<float> scale;
-
-        TransformComponent() {
-            position = Position(0,0);
-            scale    = Vec2<float>(1,1);
-        }
+        Position position{0,0};
+        Size size{0,0};
+        Vec2<float> scale{1,1};
 
         float angle;
+        
         std::shared_ptr<uint32_t> id;
     };
 
