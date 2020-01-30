@@ -14,9 +14,8 @@ namespace ChildrensTears {
                 auto physics   = &coord.getComponent<PhysicsComponent>(entity);
                 auto transform = &coord.getComponent<TransformComponent>(entity);
 
-                physics->acceleration = (physics->resultantForce/physics->mass);
                 physics->velocity += physics->acceleration;
-                transform->position += physics->velocity * delT;
+                transform->position += physics->velocity;
             }
         }
     };
@@ -50,16 +49,17 @@ namespace ChildrensTears {
 
                 // Update all the values
                 rigidbody->position = transform->position;
-                rigidbody->angle    = transform->angle;
-                rigidbody->scale    = transform->scale;
-                rigidbody->size     = transform->size;
-                rigidbody->mass     = physics->mass;
+                rigidbody->angle = transform->angle;
+                rigidbody->scale = transform->scale;
+                rigidbody->size = transform->size;
+                rigidbody->mass = physics->mass;
 
                 // Recalculate the quadtree
                 quad->insert(rigidbody->position, *rigidbody);
 
-                if (rigidbody->hasGravity == true) {
-                    physics->resultantForce.y += rigidbody->mass*rigidbody->g_accel;
+
+                if (rigidbody->hasGravity == true && rigidbody->isColliding == false) {
+                    physics->acceleration.y += rigidbody->mass*rigidbody->g_accel*deltaT;
                 }
            }
         }
@@ -67,6 +67,8 @@ namespace ChildrensTears {
         std::vector<RigidbodyComponent> checkCollision(AABB range, EntityID entity) {
             auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
             std::vector<RigidbodyComponent> allComponents;
+
+            rigidbody->isColliding = false; 
 
             for (auto& c : quad->queryRange(range)) {
                 if (!(c.position == rigidbody->position)) {
@@ -78,13 +80,49 @@ namespace ChildrensTears {
             return allComponents;
         }
 
-        void onCollision(RigidbodyComponent collider, EntityID id) { 
-            auto phys     = &coord.getComponent<PhysicsComponent>(id);
-            auto col_phys = &coord.getComponent<PhysicsComponent>(collider.id);
+        void onCollision(RigidbodyComponent& collider, EntityID id) { 
+            auto rb = &coord.getComponent<RigidbodyComponent>(id);
+            auto phys = &coord.getComponent<PhysicsComponent>(id);      
 
-            if (collider.isStatic == false) {
-                col_phys->resultantForce -= (col_phys->resultantForce - phys->resultantForce);
+            if (rb->isStatic == false && rb->isColliding == false) {
+                // Make sure you're looking at the force in the right direction
+
+                // Check for horizontal forces
+                if (((phys->velocity.x > 0 && rb->position.x < collider.position.x) // Rightward force
+                 || (phys->velocity.x < 0 && rb->position.x > collider.position.x)) // Leftward force
+                 && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10)) // Check if it isn't above the block
+                {
+                    // So the rigidbody is acting a horizontal force on the object
+
+                    // Apply the force (if object isn't static)
+                    if (collider.isStatic == false) {
+                        auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
+                        col_phys->velocity.x += phys->velocity.x;
+                    }
+
+                    // Apply equal, but opposite force on yourself
+                    phys->acceleration.x -= phys->acceleration.x;
+                    phys->velocity.x -= phys->velocity.x;
+                }
+
+                // Check for vertical forces
+                if ((phys->velocity.y > 0 && rb->position.y < collider.position.y) // Upward force 
+                ||  (phys->velocity.y < 0 && rb->position.y > collider.position.y)) // Downward force
+                {
+                    // So the rigidbody is acting a vertical force on the object
+
+                    // Apply the force (if object isn't static)
+                    if (collider.isStatic == false) {
+                        auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
+                        col_phys->velocity.y += phys->velocity.x;
+                    }
+
+                    // Apply equal, but opposite force on yourself
+                    phys->acceleration.y -= phys->acceleration.y;
+                    phys->velocity.y -= phys->velocity.y; // Accounting for the last movement
+                }
             }
-        }
+            rb->isColliding = true;
+       }
     };
 }
