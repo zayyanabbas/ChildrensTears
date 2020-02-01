@@ -63,6 +63,10 @@ namespace ChildrensTears {
            }
         }
 
+        std::vector<RigidbodyComponent> getInRange(AABB range) {
+            return quad->queryRange(range);
+        }
+
         std::vector<RigidbodyComponent> checkCollision(AABB range, EntityID entity) {
             auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
             std::vector<RigidbodyComponent> allComponents;
