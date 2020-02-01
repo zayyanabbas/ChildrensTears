@@ -1,1 +1,1 @@
-2D game engine written in C++, using the Entity-Component-System. Low level details handled by SFML temporarily. It will eventually be replaced in OpenGL.
+ChildrensTears is a 2D ECS game engine written in C++ built on top of the SFML library (used for low-level details such as windows, graphics and input handling)
