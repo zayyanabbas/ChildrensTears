@@ -15,8 +15,5 @@ namespace ChildrensTears {
     public:
         virtual void init() = 0;
         virtual void update(float = 0) = 0;
-
-        virtual void onCollision(RigidbodyComponent comp) {}
-        virtual void setPosition(Position pos) {}
     };
 }
