@@ -14,8 +14,7 @@ namespace ChildrensTears {
                 auto physics   = &coord.getComponent<PhysicsComponent>(entity);
                 auto transform = &coord.getComponent<TransformComponent>(entity);
 
-                physics->velocity += physics->acceleration;
-                transform->position += physics->velocity;
+                transform->position += physics->velocity * delT;
             }
         }
     };
@@ -59,7 +58,7 @@ namespace ChildrensTears {
 
 
                 if (rigidbody->hasGravity == true && rigidbody->isColliding == false) {
-                    physics->acceleration.y += rigidbody->mass*rigidbody->g_accel*deltaT;
+                    physics->velocity.y += rigidbody->mass*rigidbody->g_accel*deltaT; 
                 }
            }
         }
@@ -97,11 +96,10 @@ namespace ChildrensTears {
                     // Apply the force (if object isn't static)
                     if (collider.isStatic == false) {
                         auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
-                        col_phys->velocity.x += phys->velocity.x;
+                        phys->velocity.x += phys->velocity.x;
                     }
 
                     // Apply equal, but opposite force on yourself
-                    phys->acceleration.x -= phys->acceleration.x;
                     phys->velocity.x -= phys->velocity.x;
                 }
 
@@ -114,12 +112,11 @@ namespace ChildrensTears {
                     // Apply the force (if object isn't static)
                     if (collider.isStatic == false) {
                         auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
-                        col_phys->velocity.y += phys->velocity.x;
+                        phys->velocity.y += phys->velocity.y;
                     }
 
                     // Apply equal, but opposite force on yourself
-                    phys->acceleration.y -= phys->acceleration.y;
-                    phys->velocity.y -= phys->velocity.y; // Accounting for the last movement
+                    phys->velocity.y -= phys->velocity.y;
                 }
             }
             rb->isColliding = true;
