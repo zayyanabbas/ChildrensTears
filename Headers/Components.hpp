@@ -6,7 +6,6 @@
 
 namespace ChildrensTears {
     struct PhysicsComponent {
-        Vec2<float> acceleration{0,0};
         Vec2<float> velocity{0,0};
     
         float mass = 1.0;
@@ -22,7 +21,7 @@ namespace ChildrensTears {
         Size size{0,0};
         Vec2<float> scale{1,1};
 
-        constexpr static float g_accel = 1;
+        constexpr static float g_accel = 100;
         float angle;
         float mass = 1;
 
