@@ -3,12 +3,11 @@
 #include "Entities.hpp"
 #include <chrono>
 #include <SFML/Graphics.hpp>
+extern ChildrensTears::Coordinator coord;
 
 namespace ChildrensTears {
     class Game {
-    private:
-        Coordinator coordinator;
-        
+    private:        
         sf::RenderTarget* renderTarget;
 
         std::shared_ptr<RigidbodySystem> rigidbody_system;
@@ -20,14 +19,17 @@ namespace ChildrensTears {
         std::vector<BaseEntity*> entities;
 
         Game() {
-            rigidbody_system = coordinator.registerSystem<RigidbodySystem>();  
-            physics_system = coordinator.registerSystem<PhysicsSystem>();
-            render_system = coordinator.registerSystem<RenderSystem>();
+            coord.registerComponent<RigidbodyComponent>();
+            coord.registerComponent<PhysicsComponent>();
+            coord.registerComponent<RenderComponent>();
+            coord.registerComponent<TransformComponent>();
 
-            coordinator.registerComponent<RigidbodyComponent>();
-            coordinator.registerComponent<PhysicsComponent>();
-            coordinator.registerComponent<RenderComponent>();
-            coordinator.registerComponent<TransformComponent>();
+        
+
+            rigidbody_system = coord.registerSystem<RigidbodySystem>();  
+            
+            physics_system = coord.registerSystem<PhysicsSystem>();
+            render_system = coord.registerSystem<RenderSystem>();
         }
 
         void loop() {
@@ -59,6 +61,14 @@ namespace ChildrensTears {
 
             // Delta time would be the difference between each
             deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(end-start).count();
+        }
+
+        const float getDeltaTime() {
+            return deltaTime;
+        }
+
+        void setRenderTarget(sf::RenderTarget* target) {
+            renderTarget = target;
         }
     };
 }
