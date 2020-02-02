@@ -24,10 +24,7 @@ namespace ChildrensTears {
             coord.registerComponent<RenderComponent>();
             coord.registerComponent<TransformComponent>();
 
-        
-
-            rigidbody_system = coord.registerSystem<RigidbodySystem>();  
-            
+            rigidbody_system = coord.registerSystem<RigidbodySystem>();
             physics_system = coord.registerSystem<PhysicsSystem>();
             render_system = coord.registerSystem<RenderSystem>();
         }
@@ -44,6 +41,11 @@ namespace ChildrensTears {
             // What the window can see right now
             AABB windowFrame{{renderTarget->getViewport(renderTarget->getView()).top, renderTarget->getViewport(renderTarget->getView()).left},
                              {renderTarget->getViewport(renderTarget->getView()).width, renderTarget->getViewport(renderTarget->getView()).height}};
+
+            // Do Entity loop
+            for (auto& ent : entities) {
+                ent->update(deltaTime);
+            }
 
             // Check collision
 
