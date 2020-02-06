@@ -48,6 +48,11 @@ namespace ChildrensTears {
             sprite.setTexture(*texture);
         }
 
+        void loadTexture(sf::Texture& p_texture) {
+            texture = std::make_shared<sf::Texture>(p_texture);
+            sprite.setTexture(*texture);
+        }
+
         std::shared_ptr<uint32_t> id;
     };
 }
