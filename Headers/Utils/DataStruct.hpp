@@ -2,6 +2,7 @@
 #pragma once
 
 namespace ChildrensTears {
+    // Vector implementations
     template<typename T>
     struct Vec2 {
         static_assert(std::is_fundamental<T>(), "Vec2 is not primitive type");
@@ -270,11 +271,13 @@ namespace ChildrensTears {
         }
     };
 
+    // Different aliases for the vectors
     using Position = Vec2<float>;
     using Size = Vec2<int>;
     using RGBA = Vec4<int>;
     using RGB = Vec3<int>;
 
+    // AABB collision box implementation
     struct AABB {
         Position position;
         Size size;
@@ -286,6 +289,7 @@ namespace ChildrensTears {
             position = _pos;
         }
 
+        // Check if collider intersects the box
         bool checkIntersection(AABB collider) {
             return (position.x < collider.position.x + collider.size.x &&
                     position.x + size.x > collider.position.x          &&
@@ -293,6 +297,7 @@ namespace ChildrensTears {
                     position.y + size.y > collider.position.y          );
         }
 
+        // If point is contained inside the box
         bool containsPoint(Position point) {
             return (position.x < point.x          &&
                     position.x + size.x > point.x &&
@@ -301,9 +306,11 @@ namespace ChildrensTears {
         }
     };
 
+    // Quad-tree implementation
     template<typename T>
     class QuadTree {
     private:
+        // This is the boundary of quadtrees, points should be inside this.
         AABB boundary;
 
         // 4 children nodes
@@ -325,25 +332,31 @@ namespace ChildrensTears {
 
         // Check for all of type T, in your range
     public:
-        const int MaxChildren = 4;
+        static const int MaxChildren = 4;
 
+        // Get all points within a range
         std::vector<T> queryRange(AABB range) {
             std::vector<T> ret;
 
+            // If the range isn't inside the boundary, we can't check
             if (boundary.checkIntersection(range) == false) {
                 return ret;
             }
 
+            // Go through all of the values
+            // If they're contained within the range, push it to return value
             for (int i = 0; i < boxes.size(); ++i) {
                 if (range.containsPoint(boxes[i].position)) {
                     ret.push_back(boxes[i]);
                 }
             }
 
+            // If there is no top right, it hasn't been subdivided
             if (topRight == nullptr) {
                 return ret;
             }
 
+            // Traverse the tree
             for (auto& i : topLeft->queryRange(range)) {
                 ret.push_back(i);
             }
@@ -360,26 +373,33 @@ namespace ChildrensTears {
             return ret;
         }
 
+        // Insert a value into the quadtree
         bool insert(Position pos, T box) {
+            // If the position isn't inside the quadtree, you can't insert it
             if (boundary.containsPoint(pos) == false) {
                 return false;
             }
 
+            // If the quadtree has space and hasn't been subdivided, just insert it
             if (boxes.size() < MaxChildren && topLeft == nullptr) {
                 boxes.push_back(box);
                 return true;
             }
 
+            // If the quadtree hasn't been subdivided, subdivide it
             if (topLeft == nullptr) subdivide();
 
+            // Traverse the tree
             if (topLeft->insert(pos, box) == true) return true;
             if (topRight->insert(pos, box) == true) return true;
             if (bottomLeft->insert(pos, box) == true) return true;
             if (bottomRight->insert(pos, box) == true) return true;
 
+            // For some reason it's impossible to insert it
             return false;
         }
 
+        // Construct with a boundary
         QuadTree(AABB _boundary) {
             boundary = _boundary;
 

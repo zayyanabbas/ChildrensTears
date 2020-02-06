@@ -7,18 +7,23 @@ extern ChildrensTears::Coordinator coord;
 
 namespace ChildrensTears {
     class Game {
-    private:        
+    private:
+        // What the game will render to
         sf::RenderTarget* renderTarget;
 
+        // Systems of the engine
         std::shared_ptr<RigidbodySystem> rigidbody_system;
         std::shared_ptr<PhysicsSystem> physics_system;
         std::shared_ptr<RenderSystem> render_system;
 
+        // Time between frames
         float deltaTime{0.f};
     public:
+        // Keeps list of pointers to all entities
         std::vector<BaseEntity*> entities;
 
         Game() {
+            // Register parts of the engine
             coord.registerComponent<RigidbodyComponent>();
             coord.registerComponent<PhysicsComponent>();
             coord.registerComponent<RenderComponent>();
