@@ -18,13 +18,27 @@ std::unordered_map<std::string, std::string> readConfigFile(std::string path) {
 
     // Go through whole file
     while (std::getline(in, line)) {
-        // Separate files into a vector wtih words
-        std::istringstream iss(line);
-        std::vector<std::string> inVec(std::istream_iterator<std::string>{iss},std::istream_iterator<std::string>());
+        // Separate the key and arguments
+        std::string key = line.substr(0, line.find(' '));
+        std::string args = line.substr(line.find(' '), line.size());
 
         // Insert this into map
-        ret.insert({inVec[0],inVec[1]});
+        ret.insert({key,args});
     }
 
     return ret;
+}
+
+std::vector<std::string> split_string(std::string original, char separator) {
+    std::vector<std::string> results;
+    std::string::const_iterator start = original.begin();
+    std::string::const_iterator end = original.end();
+    std::string::const_iterator next = std::find(start, end, separator);
+    while ( next != end ) {
+        results.push_back(std::string(start, next));
+        start = next + 1;
+        next = std::find(start, end, separator);
+    }
+    results.push_back( std::string(start, next));
+    return results;
 }
