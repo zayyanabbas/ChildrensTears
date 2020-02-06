@@ -12,7 +12,6 @@ namespace ChildrensTears {
         Vec2<float> velocity{0,0};
     
         float mass = 1.0;
-        constexpr static float g_accel = 100;
         std::shared_ptr<uint32_t> id;
     };
 
