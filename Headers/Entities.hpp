@@ -29,5 +29,14 @@ namespace ChildrensTears {
             auto transform_component = &coord.getComponent<TransformComponent>(id);
             transform_component->position = {x,y};
         }
+
+        void setSize(Size size) {
+            auto transform_component = &coord.getComponent<TransformComponent>(id);
+            transform_component->size = size;
+        }
+        void setSize(int x, int y) {
+            auto transform_component = &coord.getComponent<TransformComponent>(id);
+            transform_component->size = {x,y};
+        }
     };
 }
