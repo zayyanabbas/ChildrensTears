@@ -299,10 +299,10 @@ namespace ChildrensTears {
 
         // If point is contained inside the box
         bool containsPoint(Position point) {
-            return (position.x < point.x          &&
-                    position.x + size.x > point.x &&
-                    position.y < point.y          &&
-                    position.y + size.y > point.y );
+            return (position.x <= point.x          &&
+                    position.x + size.x >= point.x &&
+                    position.y <= point.y          &&
+                    position.y + size.y >= point.y );
         }
     };
 
