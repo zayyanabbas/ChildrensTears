@@ -21,6 +21,8 @@ namespace ChildrensTears {
         // Take time at the start of the frame
         auto start = std::chrono::high_resolution_clock::now();
 
+        renderTarget->clear();
+
         // Run all the loops of the systems
         physics_system->update(deltaTime);
         render_system->drawRenderables(renderTarget);

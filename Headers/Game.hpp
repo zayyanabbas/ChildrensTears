@@ -1,5 +1,5 @@
 #include "Systems.hpp"
-#include "Entities.hpp"
+#include "Utils/Entities.hpp"
 #include <SFML/Graphics.hpp>
 
 namespace ChildrensTears {

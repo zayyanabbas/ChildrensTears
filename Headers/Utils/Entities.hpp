@@ -1,4 +1,4 @@
-#include "Components.hpp"
+#include "../Components.hpp"
 #pragma once
 
 namespace ChildrensTears {

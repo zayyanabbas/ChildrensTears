@@ -1,5 +1,6 @@
 #pragma once
-#include "Utils/Entities.hpp"
+#include <SFML/Graphics.hpp>
+#include "Utils/DataStruct.hpp"
 
 namespace ChildrensTears {
     class Camera {

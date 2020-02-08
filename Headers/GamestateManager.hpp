@@ -6,10 +6,10 @@ namespace ChildrensTears {
     private:
         std::unordered_map<std::string,int> states;
     public:
-        GamestateManager();
+        GamestateManager() = default;
 
         // Insert a state into the map along with a default value
-        void insertState(std::string key, int state);
+        void createState(std::string key, int state);
 
         // Set a specific state
         void setState(std::string key, int state);
