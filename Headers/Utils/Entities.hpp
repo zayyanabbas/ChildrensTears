@@ -22,5 +22,7 @@ namespace ChildrensTears {
         // Change the size of the entity
         void setSize(Size size);
         void setSize(int x, int y);
+
+        EntityID getID();
     };
 }

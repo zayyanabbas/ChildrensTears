@@ -29,4 +29,7 @@ namespace ChildrensTears {
         auto transform_component = &coord.getComponent<TransformComponent>(id);
         transform_component->size = {x,y};
     }
+    EntityID BaseEntity::getID() {
+        return id;
+    }
 }
