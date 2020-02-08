@@ -273,7 +273,7 @@ namespace ChildrensTears {
 
     // Different aliases for the vectors
     using Position = Vec2<float>;
-    using Size = Vec2<int>;
+    using Size = Vec2<float>;
     using RGBA = Vec4<int>;
     using RGB = Vec3<int>;
 
