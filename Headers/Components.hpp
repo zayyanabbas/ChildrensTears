@@ -53,17 +53,10 @@ namespace ChildrensTears {
         sf::Sprite sprite;
 
         // Load the texture from a path
-        void loadTexture(const char* path) {
-            texture = std::make_shared<sf::Texture>();
-            assert(texture->loadFromFile(path) == true && "Can't find image file");
-            sprite.setTexture(*texture);
-        }
+        void loadTexture(const char* path);
 
         // Point the texture to another address
-        void loadTexture(sf::Texture& p_texture) {
-            texture = std::make_shared<sf::Texture>(p_texture);
-            sprite.setTexture(*texture);
-        }
+        void loadTexture(sf::Texture& p_texture);
 
         std::shared_ptr<uint32_t> id;
     };

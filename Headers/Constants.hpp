@@ -8,11 +8,11 @@ namespace ChildrensTears {
     namespace Constants {
         // Maximum number of entities allowed by the engine
         // Read from a config file
-        uint32_t MaxEntities = std::stoi(readConfigFile("./config.cfg").find("MaxEntities")->second);
+        static uint32_t MaxEntities = std::stoi(readConfigFile("./config.cfg").find("MaxEntities")->second);
 
         // Total number of components
         // Can't be changed out of code
-        constexpr uint8_t MaxComponents = 4;
+        static constexpr uint8_t MaxComponents = 4;
     }
 
     // Convenient aliases

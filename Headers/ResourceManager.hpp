@@ -8,24 +8,12 @@ namespace ChildrensTears {
         std::unordered_map<std::string, sf::Texture> textures;
     public:
         // If you want the path to be the key
-        bool insert(std::string path) {
-            sf::Texture texture;
-            if (texture.loadFromFile(path) == false) return false;
-            textures.insert({path, texture});
-            return true;
-        }
+        bool insert(std::string path);
 
         // Overload with custom key
-        bool insert(std::string path, std::string key) {
-            sf::Texture texture;
-            if (texture.loadFromFile(path) == false) return false;
-            textures.insert({key, texture});
-            return true;
-        }
+        bool insert(std::string path, std::string key);
 
-        sf::Texture* requestTexture(std::string key) {
-            // Return if the texture is inside the map
-            return textures.find(key) != textures.end() ? &textures.find(key)->second : nullptr;
-        }
+        // Get a texture from the map
+        sf::Texture* requestTexture(std::string key);
     };
 }
