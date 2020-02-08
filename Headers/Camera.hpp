@@ -1,14 +1,19 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Utils/DataStruct.hpp"
+#include "Utils/Entities.hpp"
 
 namespace ChildrensTears {
-    class Camera {
+    class Camera : public BaseEntity {
     private:
         sf::View view;
+        EntityID locked_id;
     public:
         Camera() = default;
         Camera(Position centre, Size size);
+
+        void init() override;
+        void update(float deltaT) override;
 
         void setZoom(float zoom);
 
@@ -18,6 +23,8 @@ namespace ChildrensTears {
         Size getSize();
         void setSize(Size size);
 
-        sf::View& getCamera();
+        void applyCamera(sf::RenderTarget* target);
+
+        void lockToEntity(EntityID id);
     };
 }
