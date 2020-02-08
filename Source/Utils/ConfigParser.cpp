@@ -20,7 +20,7 @@ namespace ChildrensTears {
         while (std::getline(in, line)) {
             // Separate the key and arguments
             std::string key = line.substr(0, line.find(' '));
-            std::string args = line.substr(line.find(' '), line.size());
+            std::string args = line.substr(line.find(' ') + 1, line.size());
 
             // Insert this into map
             ret.insert({key,args});
