@@ -39,7 +39,6 @@ namespace ChildrensTears {
 
     void Camera::init() {
         addEntity();
-        id = -1;
     }
 
     void Camera::update(float deltaT) {
