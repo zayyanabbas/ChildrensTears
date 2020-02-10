@@ -42,9 +42,7 @@ namespace ChildrensTears {
     }
 
     void Camera::update(float deltaT) {
-        if (id != -1) {
-            auto transform_component = &coord.getComponent<TransformComponent>(locked_id);
-            setCentre(transform_component->position);
-        }
+        auto transform_component = &coord.getComponent<TransformComponent>(locked_id);
+        setCentre(transform_component->position);
     }
 }
