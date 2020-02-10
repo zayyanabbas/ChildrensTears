@@ -12,4 +12,6 @@ namespace ChildrensTears {
 
     // Splits a string into a vector based on a separating character
     std::vector<std::string> split_string(std::string original, char separator);
+    
+    std::vector<std::string> linesFromFile(std::string path);
 }
