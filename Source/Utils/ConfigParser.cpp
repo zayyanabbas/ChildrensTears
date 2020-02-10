@@ -29,6 +29,17 @@ namespace ChildrensTears {
         return ret;
     }
 
+    std::vector<std::string> linesFromFile(std::string path) {
+        std::string line;
+        std::ifstream in(path);
+        std::vector<std::string> ret;
+        assert(in.is_open() && "Can't find file");
+        while (std::getline(in, line)) {
+            ret.push_back(line);
+        }
+        return ret;
+    }
+
     std::vector<std::string> split_string(std::string original, char separator) {
         std::vector<std::string> results;
    
