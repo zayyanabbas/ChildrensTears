@@ -85,7 +85,8 @@ namespace ChildrensTears {
             // Check for horizontal forces
             if (((phys->velocity.x > 0 && rb->position.x < collider.position.x) // Rightward force
              || (phys->velocity.x < 0 && rb->position.x > collider.position.x)) // Leftward force
-             && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10)) // Check if it isn't above the block
+             && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10
+             && (rb->position.y < collider.position.y + collider.size.y))) // Check if it isn't above the block (mild leeway)
             {
                 // So the rigidbody is acting a horizontal force on the object
 
@@ -100,8 +101,10 @@ namespace ChildrensTears {
             }
 
             // Check for vertical forces
-            if ((phys->velocity.y > 0 && rb->position.y < collider.position.y) // Upward force 
-            ||  (phys->velocity.y < 0 && rb->position.y > collider.position.y)) // Downward force
+            if ((phys->velocity.y > 0 && rb->position.y < collider.position.y && rb->position.y + rb->size.y < collider.position.y + collider.size.y/10) // Upward force 
+            ||  (phys->velocity.y < 0 && rb->position.y > collider.position.y && rb->position.y + rb->size.y > collider.position.y + collider.size.y) // Downward force
+            &&  (rb->position.x + rb->size.x > collider.position.y
+            &&   rb->position.x < collider.position.y + collider.size.y))
             {
                 // So the rigidbody is acting a vertical force on the object
 
