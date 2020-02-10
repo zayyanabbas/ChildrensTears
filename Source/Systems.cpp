@@ -28,8 +28,7 @@ namespace ChildrensTears {
     }
 
     void RigidbodySystem::update(float deltaT) {
-        // Temp while waiting for frustrum culling
-        quad = std::make_unique<QuadTree<RigidbodyComponent>>(QuadTree<RigidbodyComponent>(AABB(Position(0,0),Size(1000,1000))));
+        quad = std::make_unique<QuadTree<RigidbodyComponent>>(screen);
 
         for (auto& entity : entities) {
             auto transform = &coord.getComponent<TransformComponent>(entity);
@@ -45,8 +44,7 @@ namespace ChildrensTears {
 
             // Recalculate the quadtree
             quad->insert(rigidbody->position, *rigidbody);
-
-
+            
             if (rigidbody->hasGravity == true && rigidbody->isColliding == false) {
                 physics->velocity.y += rigidbody->mass*rigidbody->g_accel*deltaT; 
             }
@@ -118,5 +116,9 @@ namespace ChildrensTears {
             }
         }
         rb->isColliding = true;
+    }
+
+    void RigidbodySystem::setScreen(AABB& visible_screen) {
+        screen = visible_screen;
     }
 }

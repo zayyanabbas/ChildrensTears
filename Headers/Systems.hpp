@@ -17,6 +17,7 @@ namespace ChildrensTears {
     class RigidbodySystem : public bSystem {
     private:
         std::unique_ptr<QuadTree<RigidbodyComponent>> quad;
+        AABB screen;
     public:
         void update(float deltaT);
 
@@ -25,5 +26,7 @@ namespace ChildrensTears {
         std::vector<RigidbodyComponent> checkCollision(AABB range, EntityID entity);
 
         void onCollision(RigidbodyComponent& collider, EntityID id);
+
+        void setScreen(AABB& screen);
     };
 }
