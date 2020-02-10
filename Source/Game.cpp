@@ -29,8 +29,11 @@ namespace ChildrensTears {
         rigidbody_system->update(deltaTime);
 
         // What the window can see right now
-        AABB windowFrame{{renderTarget->getViewport(renderTarget->getView()).top, renderTarget->getViewport(renderTarget->getView()).left},
-                        {renderTarget->getViewport(renderTarget->getView()).width, renderTarget->getViewport(renderTarget->getView()).height}};
+        AABB windowFrame{{renderTarget->getView().getCenter().x - renderTarget->getView().getSize().x/2,
+                          renderTarget->getView().getCenter().y - renderTarget->getView().getSize().y/2},
+                          {renderTarget->getView().getSize().x, renderTarget->getView().getSize().y}};
+
+        rigidbody_system->setScreen(windowFrame);
 
         // Do Entity loop
         for (auto& ent : entities) {
