@@ -399,6 +399,10 @@ namespace ChildrensTears {
             return false;
         }
 
+        void setBoundary(AABB _boundary) {
+            boundary = _boundary;
+        }
+
         // Construct with a boundary
         QuadTree(AABB _boundary) {
             boundary = _boundary;
