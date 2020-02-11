@@ -40,14 +40,9 @@ namespace ChildrensTears {
             rigidbody->angle = transform->angle;
             rigidbody->scale = transform->scale;
             rigidbody->size = transform->size;
-            rigidbody->mass = physics->mass;
 
             // Recalculate the quadtree
             quad->insert(rigidbody->position, *rigidbody);
-            
-            if (rigidbody->hasGravity == true && rigidbody->isColliding == false) {
-                physics->velocity.y += rigidbody->mass*rigidbody->g_accel*deltaT; 
-            }
         }
     }
 
@@ -60,6 +55,7 @@ namespace ChildrensTears {
         std::vector<RigidbodyComponent> allComponents;
 
         rigidbody->isColliding = false; 
+        rigidbody->collision_state = Rigidbody::NOT_COLLIDING;
 
         // For all nearby AABB boxes
         for (auto& c : quad->queryRange(range)) {
@@ -83,39 +79,37 @@ namespace ChildrensTears {
             // Make sure you're looking at the force in the right direction
 
             // Check for horizontal forces
-            if (((phys->velocity.x > 0 && rb->position.x < collider.position.x) // Rightward force
-             || (phys->velocity.x < 0 && rb->position.x > collider.position.x)) // Leftward force
+            if ((phys->velocity.x > 0 && rb->position.x < collider.position.x) // Rightward force
              && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10
              && (rb->position.y < collider.position.y + collider.size.y))) // Check if it isn't above the block (mild leeway)
             {
-                // So the rigidbody is acting a horizontal force on the object
+                // So the rigidbody is acting a rightward force on the object
+                rb->collision_state = Rigidbody::RIGHTWARDS_COLLISION;
+            }
 
-                // Apply the force (if object isn't static)
-                if (collider.isStatic == false) {
-                    auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
-                    phys->velocity.x += phys->velocity.x;
-                }
-
-                // Apply equal, but opposite force on yourself
-                phys->velocity.x -= phys->velocity.x;
+            if ((phys->velocity.x < 0 && rb->position.x > collider.position.x) // Leftward force
+             && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10
+             && (rb->position.y < collider.position.y + collider.size.y))) // Check if it isn't above the block (mild leeway)
+            {
+                // So the rigidbody is acting a leftward force on the object
+                rb->collision_state = Rigidbody::LEFTWARDS_COLLISION;
             }
 
             // Check for vertical forces
-            if ((phys->velocity.y > 0 && rb->position.y < collider.position.y && rb->position.y + rb->size.y < collider.position.y + collider.size.y/10) // Upward force 
-            ||  (phys->velocity.y < 0 && rb->position.y > collider.position.y && rb->position.y + rb->size.y > collider.position.y + collider.size.y) // Downward force
+            if ((phys->velocity.y > 0 && rb->position.y < collider.position.y && rb->position.y + rb->size.y < collider.position.y + collider.size.y/10) // above what it's being colliding with 
             &&  (rb->position.x + rb->size.x > collider.position.y
             &&   rb->position.x < collider.position.y + collider.size.y))
             {
-                // So the rigidbody is acting a vertical force on the object
+                // So the rigidbody is acting a downward force on the object
+                rb->collision_state = Rigidbody::DOWNWARDS_COLLISION;
+            }
 
-                // Apply the force (if object isn't static)
-                if (collider.isStatic == false) {
-                    auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
-                    phys->velocity.y += phys->velocity.y;
-                }
-
-                // Apply equal, but opposite force on yourself
-                phys->velocity.y -= phys->velocity.y;
+            if ((phys->velocity.y < 0 && rb->position.y > collider.position.y && rb->position.y + rb->size.y > collider.position.y + collider.size.y) // below what it's colliding with
+            &&  (rb->position.x + rb->size.x > collider.position.y
+            &&   rb->position.x < collider.position.y + collider.size.y)) 
+            {
+                // So the rigidbody is acting an upwards force on the object
+                rb->collision_state = Rigidbody::UPWARDS_COLLISION;
             }
         }
         rb->isColliding = true;
