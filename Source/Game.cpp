@@ -48,6 +48,8 @@ namespace ChildrensTears {
             // And run onCollision
             for (auto& collider : rigidbody_system->checkCollision(windowFrame, *ent.id)) {
                 rigidbody_system->onCollision(collider, *ent.id);
+                physics_system->onCollision(collider, *ent.id);
+                
             }
         }
 

@@ -7,6 +7,7 @@ namespace ChildrensTears {
     class PhysicsSystem : public bSystem {
     public:
         void update(float delT);
+        void onCollision(RigidbodyComponent& collider, EntityID id);
     };
 
     class RenderSystem : public bSystem {

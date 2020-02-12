@@ -9,6 +9,9 @@ namespace ChildrensTears {
 
     // Physics component
     struct PhysicsComponent {
+        bool hasGravity = false;
+        bool isStatic = false;
+
         Vec2<float> velocity{0,0};
     
         float mass = 1.0;
@@ -25,7 +28,6 @@ namespace ChildrensTears {
     // Has common values with PhysicsComponent and TransformComponent
     struct RigidbodyComponent {
         bool isColliding = false;
-        bool hasGravity = false;
         bool isStatic = false;
 
         int collision_state = Rigidbody::NOT_COLLIDING;

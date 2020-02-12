@@ -8,9 +8,41 @@ namespace ChildrensTears {
         for (auto& entity : entities) {
             auto physics   = &coord.getComponent<PhysicsComponent>(entity);
             auto transform = &coord.getComponent<TransformComponent>(entity);
+            auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
+
+            if (physics->hasGravity && (rigidbody == nullptr || rigidbody->collision_state == Rigidbody::NOT_COLLIDING)) {
+                physics->velocity.y += physics->mass*physics->g_accel*delT; 
+            }
 
             // Update the position of the entity
             transform->position += physics->velocity * delT;
+        }
+    }
+
+    void PhysicsSystem::onCollision(RigidbodyComponent& collider, EntityID id) {
+        auto physics = &coord.getComponent<PhysicsComponent>(id);
+        auto rigidbody = &coord.getComponent<RigidbodyComponent>(id);
+        if (physics->isStatic == false) {
+            if (rigidbody->collision_state == Rigidbody::RIGHTWARDS_COLLISION || rigidbody->collision_state == Rigidbody::LEFTWARDS_COLLISION) {
+                // So the rigidbody is acting a horizontal force on the object
+                auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
+                if (col_phys->isStatic == false) {
+                    col_phys->velocity.x += physics->velocity.x;
+                }
+                
+                // Apply the equal, but opposite force on yourself
+                physics->velocity.x -= physics->velocity.x;
+            }
+            
+            if (rigidbody->collision_state == Rigidbody::UPWARDS_COLLISION || rigidbody->collision_state == Rigidbody::DOWNWARDS_COLLISION) {
+                // So the rigidbody is acting a vertical force on the object
+                auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
+                if (col_phys->isStatic == false) {
+                    col_phys->velocity.y += physics->velocity.y;
+                }
+
+                physics->velocity.y -= physics->velocity.y;
+            }
         }
     }
 
@@ -40,6 +72,7 @@ namespace ChildrensTears {
             rigidbody->angle = transform->angle;
             rigidbody->scale = transform->scale;
             rigidbody->size = transform->size;
+            rigidbody->isStatic = physics->isStatic;
 
             // Recalculate the quadtree
             quad->insert(rigidbody->position, *rigidbody);
@@ -97,16 +130,16 @@ namespace ChildrensTears {
 
             // Check for vertical forces
             if ((phys->velocity.y > 0 && rb->position.y < collider.position.y && rb->position.y + rb->size.y < collider.position.y + collider.size.y/10) // above what it's being colliding with 
-            &&  (rb->position.x + rb->size.x > collider.position.y
-            &&   rb->position.x < collider.position.y + collider.size.y))
+            &&  (rb->position.y + rb->size.y > collider.position.y
+            &&   rb->position.y < collider.position.y + collider.size.y))
             {
                 // So the rigidbody is acting a downward force on the object
                 rb->collision_state = Rigidbody::DOWNWARDS_COLLISION;
             }
 
             if ((phys->velocity.y < 0 && rb->position.y > collider.position.y && rb->position.y + rb->size.y > collider.position.y + collider.size.y) // below what it's colliding with
-            &&  (rb->position.x + rb->size.x > collider.position.y
-            &&   rb->position.x < collider.position.y + collider.size.y)) 
+            &&  (rb->position.y + rb->size.y > collider.position.y
+            &&   rb->position.y < collider.position.y + collider.size.y)) 
             {
                 // So the rigidbody is acting an upwards force on the object
                 rb->collision_state = Rigidbody::UPWARDS_COLLISION;
