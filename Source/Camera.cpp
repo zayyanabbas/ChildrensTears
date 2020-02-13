@@ -43,6 +43,10 @@ namespace ChildrensTears {
 
     void Camera::update(float deltaT) {
         auto transform_component = &coord.getComponent<TransformComponent>(locked_id);
-        setCentre(transform_component->position);
+        setCentre(transform_component->position + camera_offset);
+    }
+
+    void Camera::setOffset(Vec2<float> offset) {
+        camera_offset = offset;
     }
 }

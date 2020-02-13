@@ -8,6 +8,7 @@ namespace ChildrensTears {
     private:
         sf::View view;
         EntityID locked_id;
+        Vec2<float> camera_offset;
     public:
         Camera() = default;
         Camera(Position centre, Size size);
@@ -26,5 +27,7 @@ namespace ChildrensTears {
         void applyCamera(sf::RenderTarget* target);
 
         void lockToEntity(EntityID id);
+
+        void setOffset(Vec2<float> offset);
     };
 }
