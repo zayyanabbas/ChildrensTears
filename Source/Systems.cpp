@@ -10,8 +10,8 @@ namespace ChildrensTears {
             auto transform = &coord.getComponent<TransformComponent>(entity);
             auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
 
-            if (physics->hasGravity && (rigidbody == nullptr || rigidbody->collision_state == Rigidbody::NOT_COLLIDING)) {
-                physics->velocity.y += physics->mass*physics->g_accel*delT; 
+            if (physics->hasGravity && (rigidbody == nullptr || rigidbody->downwards_collision == false)) {
+                physics->velocity.y += physics->mass*physics->g_accel*delT;
             }
 
             // Update the position of the entity
@@ -19,30 +19,22 @@ namespace ChildrensTears {
         }
     }
 
-    void PhysicsSystem::onCollision(RigidbodyComponent& collider, EntityID id) {
+    void PhysicsSystem::applyCollision(EntityID id, float deltaT) {
         auto physics = &coord.getComponent<PhysicsComponent>(id);
         auto rigidbody = &coord.getComponent<RigidbodyComponent>(id);
+        auto transform = &coord.getComponent<TransformComponent>(id);
+
         if (physics->isStatic == false) {
-            if (rigidbody->collision_state == Rigidbody::RIGHTWARDS_COLLISION || rigidbody->collision_state == Rigidbody::LEFTWARDS_COLLISION) {
+            if (rigidbody->rightwards_collision || rigidbody->leftwards_collision) {
                 // So the rigidbody is acting a horizontal force on the object
-                auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
-                if (col_phys->isStatic == false) {
-                    col_phys->velocity.x += physics->velocity.x;
-                }
-                
                 // Apply the equal, but opposite force on yourself
-                physics->velocity.x -= physics->velocity.x;
+                transform->position.x -= physics->velocity.x * deltaT;
             }
             
-            if (rigidbody->collision_state == Rigidbody::UPWARDS_COLLISION || rigidbody->collision_state == Rigidbody::DOWNWARDS_COLLISION) {
-                // So the rigidbody is acting a vertical force on the object
-                auto col_phys = &coord.getComponent<PhysicsComponent>(*collider.id);
-                if (col_phys->isStatic == false) {
-                    col_phys->velocity.y += physics->velocity.y;
-                }
-
-                physics->velocity.y -= physics->velocity.y;
+            if ((physics->velocity.y > 0 && rigidbody->downwards_collision) || (physics->velocity.y < 0 && rigidbody->upwards_collision)) {
+                transform->position.y -= physics->velocity.y * deltaT;
             }
+            if (rigidbody->upwards_collision && physics->velocity.y > 0) transform->position.y += physics->velocity.y * deltaT;
         }
     }
 
@@ -74,6 +66,12 @@ namespace ChildrensTears {
             rigidbody->size = transform->size;
             rigidbody->isStatic = physics->isStatic;
 
+            rigidbody->isColliding = false;
+            rigidbody->rightwards_collision = false;
+            rigidbody->leftwards_collision = false;
+            rigidbody->upwards_collision = false;
+            rigidbody->downwards_collision = false;
+
             // Recalculate the quadtree
             quad->insert(rigidbody->position, *rigidbody);
         }
@@ -87,13 +85,10 @@ namespace ChildrensTears {
         auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
         std::vector<RigidbodyComponent> allComponents;
 
-        rigidbody->isColliding = false; 
-        rigidbody->collision_state = Rigidbody::NOT_COLLIDING;
-
         // For all nearby AABB boxes
         for (auto& c : quad->queryRange(range)) {
-            // If it's not in my position (stops collision against self)
-            if (!(c.position == rigidbody->position)) {
+            // If it's not me
+            if (c.id != rigidbody->id) {
                 // And it's intersecting me
                 if (AABB(rigidbody->position,rigidbody->size).checkIntersection(AABB(c.position,c.size))) {
                     // Add to vector of components colliding with me.
@@ -101,50 +96,36 @@ namespace ChildrensTears {
                 }
             }
         }
+
         return allComponents;
     }
 
     void RigidbodySystem::onCollision(RigidbodyComponent& collider, EntityID id) {
         auto rb = &coord.getComponent<RigidbodyComponent>(id);
-        auto phys = &coord.getComponent<PhysicsComponent>(id);      
+        auto phys = &coord.getComponent<PhysicsComponent>(id);
 
-        if (rb->isStatic == false && rb->isColliding == false) {
-            // Make sure you're looking at the force in the right direction
+        // Make sure you're looking at the force in the right direction
 
-            // Check for horizontal forces
-            if ((phys->velocity.x > 0 && rb->position.x < collider.position.x) // Rightward force
-             && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10
-             && (rb->position.y < collider.position.y + collider.size.y))) // Check if it isn't above the block (mild leeway)
-            {
-                // So the rigidbody is acting a rightward force on the object
-                rb->collision_state = Rigidbody::RIGHTWARDS_COLLISION;
-            }
+        // Check for horizontal forces
 
-            if ((phys->velocity.x < 0 && rb->position.x > collider.position.x) // Leftward force
-             && (rb->position.y + rb->size.y > collider.position.y + collider.size.y/10
-             && (rb->position.y < collider.position.y + collider.size.y))) // Check if it isn't above the block (mild leeway)
-            {
-                // So the rigidbody is acting a leftward force on the object
-                rb->collision_state = Rigidbody::LEFTWARDS_COLLISION;
-            }
-
-            // Check for vertical forces
-            if ((phys->velocity.y > 0 && rb->position.y < collider.position.y && rb->position.y + rb->size.y < collider.position.y + collider.size.y/10) // above what it's being colliding with 
-            &&  (rb->position.y + rb->size.y > collider.position.y
-            &&   rb->position.y < collider.position.y + collider.size.y))
-            {
-                // So the rigidbody is acting a downward force on the object
-                rb->collision_state = Rigidbody::DOWNWARDS_COLLISION;
-            }
-
-            if ((phys->velocity.y < 0 && rb->position.y > collider.position.y && rb->position.y + rb->size.y > collider.position.y + collider.size.y) // below what it's colliding with
-            &&  (rb->position.y + rb->size.y > collider.position.y
-            &&   rb->position.y < collider.position.y + collider.size.y)) 
-            {
-                // So the rigidbody is acting an upwards force on the object
-                rb->collision_state = Rigidbody::UPWARDS_COLLISION;
+        if (rb->position.y < collider.position.y + collider.size.y && rb->position.y + rb->size.y > collider.position.y &&
+            rb->position.y + rb->size.y > collider.position.y + collider.size.y/10) {
+            if (rb->position.x + rb->size.x > collider.position.x) {
+                rb->rightwards_collision = true;
+            } 
+            if (rb->position.x < collider.position.x + collider.size.x) {
+                rb->leftwards_collision = true;
             }
         }
+
+        if (rb->position.y + rb->size.y > collider.position.y + collider.size.y) {
+            rb->upwards_collision = true;
+        }
+
+        else if (rb->position.y + rb->size.y > collider.position.y && rb->position.y < collider.position.y) {
+            rb->downwards_collision = true;
+        }
+        
         rb->isColliding = true;
     }
 

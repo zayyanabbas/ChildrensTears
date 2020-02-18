@@ -23,9 +23,13 @@ namespace ChildrensTears {
 
         renderTarget->clear();
 
+        // Do Entity loop
+        for (auto& ent : entities) {
+            ent->update(deltaTime);
+        }
+
         // Run all the loops of the systems
         physics_system->update(deltaTime);
-        render_system->drawRenderables(renderTarget);
         rigidbody_system->update(deltaTime);
 
         // What the window can see right now
@@ -35,11 +39,6 @@ namespace ChildrensTears {
 
         rigidbody_system->setScreen(windowFrame);
 
-        // Do Entity loop
-        for (auto& ent : entities) {
-            ent->update(deltaTime);
-        }
-
         // Check collision
 
         // For all the ones currently in the window
@@ -48,10 +47,13 @@ namespace ChildrensTears {
             // And run onCollision
             for (auto& collider : rigidbody_system->checkCollision(windowFrame, *ent.id)) {
                 rigidbody_system->onCollision(collider, *ent.id);
-                physics_system->onCollision(collider, *ent.id);
-                
             }
+
+            physics_system->applyCollision(*ent.id, deltaTime);
         }
+
+        
+        render_system->drawRenderables(renderTarget);
 
         // Take time at the end of the frame
         auto end = std::chrono::high_resolution_clock::now();

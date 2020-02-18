@@ -30,7 +30,10 @@ namespace ChildrensTears {
         bool isColliding = false;
         bool isStatic = false;
 
-        int collision_state = Rigidbody::NOT_COLLIDING;
+        bool upwards_collision = false;
+        bool downwards_collision = false; 
+        bool rightwards_collision = false;
+        bool leftwards_collision = false;
 
         Position position{0,0};
         Size size{0,0};
