@@ -33,6 +33,11 @@ namespace ChildrensTears {
             
             if ((physics->velocity.y > 0 && rigidbody->downwards_collision) || (physics->velocity.y < 0 && rigidbody->upwards_collision)) {
                 transform->position.y -= physics->velocity.y * deltaT;
+
+                if (rigidbody->upwards_collision) {
+                    transform->position.y += 1;
+                    physics->velocity.y = 0;
+                }
             }
             if (rigidbody->upwards_collision && physics->velocity.y > 0) transform->position.y += physics->velocity.y * deltaT;
         }
@@ -113,17 +118,18 @@ namespace ChildrensTears {
             if (rb->position.x + rb->size.x > collider.position.x) {
                 rb->rightwards_collision = true;
             } 
-            if (rb->position.x < collider.position.x + collider.size.x) {
+            else if (rb->position.x < collider.position.x + collider.size.x) {
                 rb->leftwards_collision = true;
             }
         }
 
-        if (rb->position.y + rb->size.y > collider.position.y + collider.size.y) {
-            rb->upwards_collision = true;
-        }
-
-        else if (rb->position.y + rb->size.y > collider.position.y && rb->position.y < collider.position.y) {
-            rb->downwards_collision = true;
+        if (rb->position.x < collider.size.x || rb->position.x + rb->size.y > collider.position.x) {
+            if (rb->position.y + rb->size.y > collider.position.y + collider.size.y) {
+                rb->upwards_collision = true;
+            }
+            else if (rb->position.y + rb->size.y > collider.position.y && rb->position.y < collider.position.y) {
+                rb->downwards_collision = true;
+            }
         }
         
         rb->isColliding = true;
