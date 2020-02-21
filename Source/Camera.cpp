@@ -18,11 +18,12 @@ namespace ChildrensTears {
     }
 
     Position Camera::getCentre() {
-        return {view.getCenter().x, view.getCenter().y};
+        return centre;
     }
 
     void Camera::setCentre(Position new_position) {
-        view.setCenter({new_position.x, new_position.y});
+        centre = new_position;
+        view.setCenter({centre.x + camera_offset.x, centre.y + camera_offset.y});
     }
 
     Size Camera::getSize() {
@@ -43,7 +44,10 @@ namespace ChildrensTears {
 
     void Camera::update(float deltaT) {
         auto transform_component = &coord.getComponent<TransformComponent>(locked_id);
-        setCentre(transform_component->position + camera_offset);
+
+        if (update_x) centre.x = transform_component->position.x;
+        if (update_y) centre.y = transform_component->position.y;
+        setCentre(centre);
     }
 
     void Camera::setOffset(Vec2<float> offset) {

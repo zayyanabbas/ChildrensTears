@@ -8,10 +8,15 @@ namespace ChildrensTears {
     private:
         sf::View view;
         EntityID locked_id;
+
         Vec2<float> camera_offset;
+        Position centre;
     public:
         Camera() = default;
         Camera(Position centre, Size size);
+
+        bool update_x = true;
+        bool update_y = true;
 
         void init() override;
         void update(float deltaT) override;
