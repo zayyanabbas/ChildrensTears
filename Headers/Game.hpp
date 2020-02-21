@@ -1,6 +1,9 @@
 #include "Systems.hpp"
 #include "Utils/Entities.hpp"
+#include "EntityRegistry.hpp"
 #include <SFML/Graphics.hpp>
+
+extern ChildrensTears::EntityRegistry entity_registry;
 
 namespace ChildrensTears {
     class Game {
@@ -17,7 +20,6 @@ namespace ChildrensTears {
         float deltaTime{0.f};
     public:
         // Keeps list of pointers to all entities
-        std::vector<BaseEntity*> entities;
 
         // Constructor for the Game class
         // Registers different part of the engine

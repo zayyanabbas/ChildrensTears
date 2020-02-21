@@ -3,6 +3,7 @@
 #include <chrono>
 
 extern ChildrensTears::Coordinator coord;
+extern ChildrensTears::EntityRegistry entity_registry;
 
 namespace ChildrensTears {
     Game::Game() {
@@ -24,7 +25,7 @@ namespace ChildrensTears {
         renderTarget->clear();
 
         // Do Entity loop
-        for (auto& ent : entities) {
+        for (auto& ent : entity_registry.getList()) {
             ent->update(deltaTime);
         }
 
