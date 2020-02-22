@@ -19,6 +19,10 @@ namespace ChildrensTears {
         void setPosition(Position position);
         void setPosition(float x, float y);
 
+        // Getters
+        Position getPosition();
+        Size getSize();
+
         // Change the size of the entity
         void setSize(Size size);
         void setSize(int x, int y);
