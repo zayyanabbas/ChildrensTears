@@ -48,6 +48,9 @@ namespace ChildrensTears {
             // And run onCollision
             for (auto& collider : rigidbody_system->checkCollision(windowFrame, *ent.id)) {
                 rigidbody_system->onCollision(collider, *ent.id);
+                if (entity_registry.getEntity(*ent.id) != nullptr) { 
+                    entity_registry.getEntity(*ent.id)->onCollision(collider);
+                }
             }
 
             physics_system->applyCollision(*ent.id, deltaTime);

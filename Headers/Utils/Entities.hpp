@@ -15,6 +15,8 @@ namespace ChildrensTears {
         // Abstract method to update the entity
         virtual void update(float = 0) = 0;
 
+        virtual void onCollision(RigidbodyComponent& collider) {}
+
         // Change the position of the entity 
         void setPosition(Position position);
         void setPosition(float x, float y);
