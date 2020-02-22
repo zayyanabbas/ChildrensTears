@@ -15,7 +15,7 @@ namespace ChildrensTears {
         Vec2<float> velocity{0,0};
     
         float mass = 1.0;
-        float g_accel = 200;
+        float g_accel = 300;
         std::shared_ptr<uint32_t> id;
     };
 
@@ -27,6 +27,8 @@ namespace ChildrensTears {
     // Has flags for collision, gravity and static.
     // Has common values with PhysicsComponent and TransformComponent
     struct RigidbodyComponent {
+        std::string tag;
+
         bool isColliding = false;
         bool isStatic = false;
 
