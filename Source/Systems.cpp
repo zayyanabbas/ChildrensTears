@@ -115,10 +115,10 @@ namespace ChildrensTears {
 
         if (rb->position.y < collider.position.y + collider.size.y && rb->position.y + rb->size.y > collider.position.y &&
             rb->position.y + rb->size.y > collider.position.y + collider.size.y/10) {
-            if (rb->position.x + rb->size.x > collider.position.x) {
+            if (rb->position.x + rb->size.x > collider.position.x && rb->position.x < collider.position.x) {
                 rb->rightwards_collision = true;
             } 
-            else if (rb->position.x < collider.position.x + collider.size.x) {
+            if (rb->position.x < collider.position.x + collider.size.x && rb->position.x + rb->size.x > collider.position.x + collider.size.x) {
                 rb->leftwards_collision = true;
             }
         }
