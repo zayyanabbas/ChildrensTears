@@ -15,6 +15,7 @@ namespace ChildrensTears {
         std::shared_ptr<RigidbodySystem> rigidbody_system;
         std::shared_ptr<PhysicsSystem> physics_system;
         std::shared_ptr<RenderSystem> render_system;
+        std::shared_ptr<TransformSystem> transform_system;
 
         // Time between frames
         float deltaTime{0.f};
