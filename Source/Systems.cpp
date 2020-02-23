@@ -49,6 +49,7 @@ namespace ChildrensTears {
             auto render    = &coord.getComponent<RenderComponent>(entity);
 
             // Update position of the sprite
+            render->sprite.setTextureRect({0, 0, transform->size.x, transform->size.y});
             render->sprite.setPosition(transform->position.x, transform->position.y);
 
             // Draw to render area
