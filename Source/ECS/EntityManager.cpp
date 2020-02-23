@@ -14,7 +14,7 @@ namespace ChildrensTears {
 
     void EntityManager::destroyEntity(EntityID ID) {
         // Check if ID is valid
-        assert((ID > 0 && ID < Constants::MaxEntities) && "Entity ID not in bounds");
+        assert((ID >= 0 && ID < Constants::MaxEntities) && "Entity ID not in bounds");
             
         // Replace destroyed entity with last entity
         entities[ID] = entities[entities.size()-1];
