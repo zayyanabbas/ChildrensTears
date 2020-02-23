@@ -30,10 +30,6 @@ namespace ChildrensTears {
             signature.set(comManager->getComponentType<T>(), true);
             
             entManager->setSignature(entity,signature);
-        }
-
-        template<typename T>
-        void addToSystem(EntityID entity) {
             sysManager->addEntity<T>(entity);
         }
 
