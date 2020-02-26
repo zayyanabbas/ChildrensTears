@@ -16,7 +16,6 @@ namespace ChildrensTears {
         rigidbody_system = coord.registerSystem<RigidbodySystem>();
         physics_system = coord.registerSystem<PhysicsSystem>();
         render_system = coord.registerSystem<RenderSystem>();
-        transform_system = coord.registerSystem<TransformSystem>();
     }
 
     void Game::loop() {
