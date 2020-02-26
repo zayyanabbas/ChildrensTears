@@ -1,5 +1,6 @@
 #include "../../Headers/Utils/Entities.hpp"
 #include "../../Headers/ECS/Coordinator.hpp"
+#include "../../Headers/Systems.hpp"
 
 extern ChildrensTears::Coordinator coord;
 
@@ -11,6 +12,7 @@ namespace ChildrensTears {
         // Every entity should have a transform component
         TransformComponent transform;
         coord.addComponent<TransformComponent>(id, transform);
+        coord.addToSystem<TransformSystem>(id);
     }
     
     void BaseEntity::setPosition(Position position) {
