@@ -1,22 +1,38 @@
 #include "../Headers/Systems.hpp"
 #include "../Headers/ECS/Coordinator.hpp"
+#include "../Headers/EntityRegistry.hpp"
 
 extern ChildrensTears::Coordinator coord;
+extern ChildrensTears::EntityRegistry entity_registry;
 
 namespace ChildrensTears {
-    void PhysicsSystem::update(float delT) {
+    void TransformSystem::update() {
         for (auto& entity : entities) {
-            auto physics   = &coord.getComponent<PhysicsComponent>(entity);
             auto transform = &coord.getComponent<TransformComponent>(entity);
-            auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
-
-            if (physics->hasGravity && (rigidbody == nullptr || rigidbody->downwards_collision == false)) {
-                physics->velocity.y += physics->mass*physics->g_accel*delT;
-            }
-
-            // Update the position of the entity
-            transform->position += physics->velocity * delT;
+            quad->insert(transform->position, entity);
         }
+    }
+
+    std::vector<EntityID> TransformSystem::getInRange(AABB range) {
+        return quad->queryRange(range);
+    }
+
+    void TransformSystem::setScreen(AABB& visible_screen) {
+        screen = visible_screen;
+        quad = std::make_unique<QuadTree<EntityID>>(screen);
+    }
+
+    void PhysicsSystem::update(EntityID entity, float delT) {
+        auto physics   = &coord.getComponent<PhysicsComponent>(entity);
+        auto transform = &coord.getComponent<TransformComponent>(entity);
+        auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
+
+        if (physics->hasGravity && (rigidbody == nullptr || rigidbody->downwards_collision == false)) {
+            physics->velocity.y += physics->mass*physics->g_accel*delT;
+        }
+
+        // Update the position of the entity
+        transform->position += physics->velocity * delT;
     }
 
     void PhysicsSystem::applyCollision(EntityID id, float deltaT) {
@@ -43,62 +59,62 @@ namespace ChildrensTears {
         }
     }
 
-    void RenderSystem::drawRenderables(sf::RenderTarget* renderArea) {
-        for (auto& entity : entities) {
-            auto transform = &coord.getComponent<TransformComponent>(entity);
-            auto render    = &coord.getComponent<RenderComponent>(entity);
+    void RenderSystem::drawRenderable(EntityID entity, sf::RenderTarget* renderArea) {
+        auto transform = &coord.getComponent<TransformComponent>(entity);
+        auto render    = &coord.getComponent<RenderComponent>(entity);
 
-            // Update position of the sprite
-            render->sprite.setTextureRect({0, 0, transform->size.x, transform->size.y});
-            render->sprite.setPosition(transform->position.x, transform->position.y);
+        // Update position of the sprite
+        render->sprite.setTextureRect({0, 0, transform->size.x, transform->size.y});
+        render->sprite.setPosition(transform->position.x, transform->position.y);
 
-            // Draw to render area
-            renderArea->draw(render->sprite);
-        }
+        // Draw to render area
+        renderArea->draw(render->sprite);
     }
 
-    void RigidbodySystem::update(float deltaT) {
+    void RigidbodySystem::update(EntityID entity, float deltaT) {
         quad = std::make_unique<QuadTree<RigidbodyComponent>>(screen);
 
-        for (auto& entity : entities) {
-            auto transform = &coord.getComponent<TransformComponent>(entity);
-            auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
-            auto physics   = &coord.getComponent<PhysicsComponent>(entity);
+        auto transform = &coord.getComponent<TransformComponent>(entity);
+        auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
+        auto physics   = &coord.getComponent<PhysicsComponent>(entity);
 
-            // Update all the values
-            rigidbody->position = transform->position;
-            rigidbody->angle = transform->angle;
-            rigidbody->scale = transform->scale;
-            rigidbody->size = transform->size;
-            rigidbody->isStatic = physics->isStatic;
+        // Update all the values
+        rigidbody->position = transform->position;
+        rigidbody->angle = transform->angle;
+        rigidbody->scale = transform->scale;
+        rigidbody->size = transform->size;
+        rigidbody->isStatic = physics->isStatic;
 
-            rigidbody->isColliding = false;
-            rigidbody->rightwards_collision = false;
-            rigidbody->leftwards_collision = false;
-            rigidbody->upwards_collision = false;
-            rigidbody->downwards_collision = false;
+        rigidbody->isColliding = false;
+        rigidbody->rightwards_collision = false;
+        rigidbody->leftwards_collision = false;
+        rigidbody->upwards_collision = false;
+        rigidbody->downwards_collision = false;
 
-            // Recalculate the quadtree
-            quad->insert(rigidbody->position, *rigidbody);
-        }
+        // Recalculate the quadtree
+        quad->insert(rigidbody->position, *rigidbody);
     }
 
-    std::vector<RigidbodyComponent> RigidbodySystem::getInRange(AABB range) {
-        return quad->queryRange(range);
-    }
-
-    std::vector<RigidbodyComponent> RigidbodySystem::checkCollision(AABB range, EntityID entity) {
+    std::vector<RigidbodyComponent> RigidbodySystem::checkCollision(AABB range, EntityID entity, std::vector<EntityID> list) {
         auto rigidbody = &coord.getComponent<RigidbodyComponent>(entity);
         std::vector<RigidbodyComponent> allComponents;
 
+        // Check if entity exists
+        if (entity_registry.getEntity(entity) == nullptr) {
+            // If not, return empty vector
+            return allComponents;
+        }
+
         // For all nearby AABB boxes
-        for (auto& c : quad->queryRange(range)) {
+        for (auto& c : list) {
             // If it's not me
-            if (c.id != rigidbody->id) {
+            if (c != *rigidbody->id) {
                 // And it's intersecting me
-                if (AABB(rigidbody->position,rigidbody->size).checkIntersection(AABB(c.position,c.size))) {
-                    // Add to vector of components colliding with me.
-                    allComponents.push_back(c);
+                auto rb = &coord.getComponent<RigidbodyComponent>(c);
+
+                if (AABB(rigidbody->position,rigidbody->size).checkIntersection(AABB(rb->position,rb->size))) {
+                    // Add to vector of components colliding with me
+                    allComponents.push_back(*rb);
                 }
             }
         }
@@ -134,9 +150,5 @@ namespace ChildrensTears {
         }
         
         rb->isColliding = true;
-    }
-
-    void RigidbodySystem::setScreen(AABB& visible_screen) {
-        screen = visible_screen;
     }
 }
