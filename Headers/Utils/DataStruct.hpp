@@ -321,6 +321,7 @@ namespace ChildrensTears {
 
         // This is templated so I can have multiple data types in the QuadTree
         std::vector<T> boxes;
+        std::vector<Position> box_positions;
 
         // Splits into 4 different parts
         void subdivide() {
@@ -346,7 +347,7 @@ namespace ChildrensTears {
             // Go through all of the values
             // If they're contained within the range, push it to return value
             for (int i = 0; i < boxes.size(); ++i) {
-                if (range.containsPoint(boxes[i].position)) {
+                if (range.containsPoint(box_positions[i])) {
                     ret.push_back(boxes[i]);
                 }
             }
@@ -383,6 +384,7 @@ namespace ChildrensTears {
             // If the quadtree has space and hasn't been subdivided, just insert it
             if (boxes.size() < MaxChildren && topLeft == nullptr) {
                 boxes.push_back(box);
+                box_positions.push_back(pos);
                 return true;
             }
 
