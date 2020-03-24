@@ -12,7 +12,6 @@ namespace ChildrensTears {
         sf::RenderTarget* renderTarget;
 
         // Systems of the engine
-        std::shared_ptr<RigidbodySystem> rigidbody_system;
         std::shared_ptr<PhysicsSystem> physics_system;
         std::shared_ptr<RenderSystem> render_system;
         std::shared_ptr<TransformSystem> transform_system;
