@@ -15,7 +15,7 @@ namespace ChildrensTears {
         // Abstract method to update the entity
         virtual void update(float = 0) = 0;
 
-        virtual void onCollision(RigidbodyComponent& collider) {}
+        virtual void onCollision(EntityID collider, int colliding_side) {}
 
         // Change the position of the entity 
         void setPosition(Position position);
@@ -27,7 +27,7 @@ namespace ChildrensTears {
 
         // Change the size of the entity
         void setSize(Size size);
-        void setSize(int x, int y);
+        void setSize(float x, float y);
 
         EntityID getID();
     };

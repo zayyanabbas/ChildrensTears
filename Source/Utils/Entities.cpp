@@ -27,7 +27,7 @@ namespace ChildrensTears {
         auto transform_component = &coord.getComponent<TransformComponent>(id);
         transform_component->size = size;
     }
-    void BaseEntity::setSize(int x, int y) {
+    void BaseEntity::setSize(float x, float y) {
         auto transform_component = &coord.getComponent<TransformComponent>(id);
         transform_component->size = {x,y};
     }
