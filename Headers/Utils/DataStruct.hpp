@@ -473,6 +473,10 @@ namespace ChildrensTears {
                 side |= Upwards;
                 cornerRise = (col2.position.y + col2.size.y) - col1.position.y;
             }
+
+            else {
+                return Rightwards;
+            }
         }
         // You're to the right of the block
         // You'd be colliding leftwards
@@ -492,6 +496,10 @@ namespace ChildrensTears {
             else if (col1.position.y >= col2.position.y + col2.size.y) {
                 side |= Upwards;
                 cornerRise = (col2.position.y + col2.size.y) - col1.position.y;
+            }
+
+            else {
+                return Leftwards;
             }
         }
         else {
@@ -514,19 +522,15 @@ namespace ChildrensTears {
         switch (colliding_side) {
             case Leftwards:
                 correctedLocation.x = col2.position.x + col2.size.x;
-                if (velocity.x > 0) velocity.x = 0;
                 break;
             case Rightwards:
                 correctedLocation.x = col2.position.x - col1.size.x;
-                if (velocity.x < 0) velocity.x = 0;
                 break;
             case Upwards:
                 correctedLocation.y = col2.position.y + col2.size.y;
-                if (velocity.y < 0) velocity.y = 0;
                 break;
             case Downwards:
                 correctedLocation.y = col2.position.y - col1.size.y;
-                if (velocity.y > 0) velocity.y = 0;
                 break;
         }
         

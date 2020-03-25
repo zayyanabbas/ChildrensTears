@@ -60,7 +60,6 @@ namespace ChildrensTears {
                         col1->position = getCorrectedLocation(AABB(col1->position,col1->size),col1_phys->velocity,AABB(col2->position,col2->size),colliding_side);
                         col1_phys->colliding_side |= colliding_side;
                     }
-                    std::cout << (col1_phys->colliding_side&colliding_side) << " " << col1_phys->colliding_side << " " << colliding_side << std::endl;
                 }
             }
         }
