@@ -8,11 +8,10 @@ namespace ChildrensTears {
         }
         else if ((side & Downwards) == Downwards) {
             if ((side & Rightwards) == Rightwards) return velSlope < cornerSlope ? Downwards : Rightwards;
-            else if ((side & Leftwards) == Leftwards) return velSlope < cornerSlope ? Downwards : Leftwards;
+            else if ((side & Leftwards) == Leftwards) return velSlope > cornerSlope ? Downwards : Leftwards;
         }
-
         return None;
-    }
+    }   
 
     int getCollidingSide(AABB col1, Vec2<float> velocity, AABB col2) {
         int side = None;
@@ -59,7 +58,7 @@ namespace ChildrensTears {
             // You'd be colliding downwards
             if (col1.position.y + col1.size.y <= col2.position.y) {
                 side |= Downwards;
-                cornerRise = (col1.position.y + col1.size.y) - col2.position.y;
+                cornerRise = col2.position.y - (col1.position.y + col1.size.y);
             }
 
             // You're below the block
@@ -92,7 +91,7 @@ namespace ChildrensTears {
         Vec2<float> correctedLocation = col1.position;
         switch (colliding_side) {
             case Leftwards:
-                correctedLocation.x = col2.position.x + col2.size.x;
+                correctedLocation.x = col2.position.x + col2.size.x ;
                 break;
             case Rightwards:
                 correctedLocation.x = col2.position.x - col1.size.x;
