@@ -10,7 +10,7 @@ namespace ChildrensTears {
         auto physics = &coord.getComponent<PhysicsComponent>(id);
         auto transform = &coord.getComponent<TransformComponent>(id);
 
-        physics->colliding_side = None;
+        physics->colliding_side = 0;
 
         if (physics->hasGravity) {
             physics->velocity.y += physics->mass * physics->g_accel * deltaT;

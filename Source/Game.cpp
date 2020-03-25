@@ -1,6 +1,7 @@
 #include "../Headers/ECS/Coordinator.hpp"
 #include "../Headers/Game.hpp"
 #include "../Headers/Utils/DataStruct.hpp"
+#include "../Headers/CollisionHandling.hpp"
 #include <chrono>
 
 extern ChildrensTears::Coordinator coord;
