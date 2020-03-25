@@ -1,7 +1,7 @@
 #include "../Headers/CollisionHandling.hpp"
 
 namespace ChildrensTears {
-    static int getSideFromSlopeComparison(int side, float velSlope, float cornerSlope) {
+    int getSideFromSlopeComparison(int side, float velSlope, float cornerSlope) {
         if ((side & Upwards) == Upwards) {
             if ((side & Rightwards) == Rightwards) return velSlope > cornerSlope ? Upwards : Rightwards;
             else if ((side & Leftwards) == Leftwards) return velSlope < cornerSlope ? Upwards : Leftwards;
@@ -14,7 +14,7 @@ namespace ChildrensTears {
         return None;
     }
 
-    static int getCollidingSide(AABB col1, Vec2<float> velocity, AABB col2) {
+    int getCollidingSide(AABB col1, Vec2<float> velocity, AABB col2) {
         int side = None;
         // Gradient of the moving object's velocity
         float velocitySlope = velocity.y/velocity.x;
@@ -88,7 +88,7 @@ namespace ChildrensTears {
         return getSideFromSlopeComparison(side,velocitySlope,cornerRise/cornerRun);
     }
 
-    static Vec2<float> getCorrectedLocation(AABB col1, Vec2<float>& velocity, AABB col2, int colliding_side) {
+    Vec2<float> getCorrectedLocation(AABB col1, Vec2<float>& velocity, AABB col2, int colliding_side) {
         Vec2<float> correctedLocation = col1.position;
         switch (colliding_side) {
             case Leftwards:
