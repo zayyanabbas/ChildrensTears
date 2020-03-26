@@ -1,6 +1,7 @@
 #include "../Headers/Systems.hpp"
 #include "../Headers/ECS/Coordinator.hpp"
 #include "../Headers/EntityRegistry.hpp"
+#include "../Headers/CollisionHandling.hpp"
 
 extern ChildrensTears::Coordinator coord;
 extern ChildrensTears::EntityRegistry entity_registry;
@@ -10,12 +11,11 @@ namespace ChildrensTears {
         auto physics = &coord.getComponent<PhysicsComponent>(id);
         auto transform = &coord.getComponent<TransformComponent>(id);
 
-        physics->colliding_side = 0;
-
-        if (physics->hasGravity) {
+        if (physics->hasGravity && (physics->colliding_side & Downwards) != Downwards) {
             physics->velocity.y += physics->mass * physics->g_accel * deltaT;
         }
 
+        physics->colliding_side = 0;
         transform->position += physics->velocity * deltaT;
     }
     
