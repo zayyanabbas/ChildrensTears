@@ -55,11 +55,25 @@ namespace ChildrensTears {
                     auto col1 = &coord.getComponent<TransformComponent>(ent_id);
                     auto col2 = &coord.getComponent<TransformComponent>(collider);
                     auto col1_phys = &coord.getComponent<PhysicsComponent>(ent_id);
-                    
+                    auto col2_phys = &coord.getComponent<PhysicsComponent>(collider);
+
                     int colliding_side = getCollidingSide(AABB(col1->position-col1_phys->velocity,col1->size),col1_phys->velocity,AABB(col2->position,col2->size));
                     if (!col1_phys->isStatic && (col1_phys->colliding_side&colliding_side) != colliding_side) {
                         col1->position = getCorrectedLocation(AABB(col1->position,col1->size),col1_phys->velocity,AABB(col2->position,col2->size),colliding_side);
                         col1_phys->colliding_side |= colliding_side;
+
+                        if (colliding_side == Leftwards) {
+                            col2_phys->colliding_side |= Rightwards;
+                        }
+                        else if (colliding_side == Rightwards) {
+                            col2_phys->colliding_side |= Leftwards;
+                        }
+                        else if (colliding_side == Upwards) {
+                            col2_phys->colliding_side |= Downwards;
+                        }
+                        else if (colliding_side == Downwards) {
+                            col2_phys->colliding_side |= Upwards;
+                        }
                     }
                 }
             }
