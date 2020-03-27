@@ -17,6 +17,7 @@ namespace ChildrensTears {
 
         physics->colliding_side = 0;
         transform->position += physics->velocity * deltaT;
+        physics->position = transform->position;
     }
     
     void TransformSystem::update() {
