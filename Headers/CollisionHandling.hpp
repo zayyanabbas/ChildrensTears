@@ -1,3 +1,4 @@
+#pragma once
 #include "Utils/DataStruct.hpp"
 namespace ChildrensTears
 {
