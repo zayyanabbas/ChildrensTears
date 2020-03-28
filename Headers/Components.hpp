@@ -10,6 +10,8 @@ namespace ChildrensTears {
     // Physics component
 
     struct PhysicsComponent {
+        std::optional<std::string> tag;
+
         bool hasGravity = false;
         bool isStatic = false;
 
@@ -27,6 +29,8 @@ namespace ChildrensTears {
     // Transform component
     // Contains position, size, scale, angle
     struct TransformComponent {
+        std::optional<std::string> tag;
+
         Position position{0,0};
         Size size{0,0};
         Vec2<float> scale{1,1};
@@ -39,6 +43,8 @@ namespace ChildrensTears {
     // RenderComponent
     // Has the sprite and a pointer to a texture
     struct RenderComponent {
+        std::optional<std::string> tag;
+        
         std::shared_ptr<sf::Texture> texture;
         sf::Sprite sprite;
 
