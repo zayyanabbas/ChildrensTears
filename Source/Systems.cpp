@@ -15,6 +15,19 @@ namespace ChildrensTears {
             physics->velocity.y += physics->mass * physics->g_accel * deltaT;
         }
 
+        if ((physics->colliding_side & Downwards) == Downwards && physics->velocity.y > 0) {
+            physics->velocity.y = 0;
+        }
+        if ((physics->colliding_side & Upwards) == Upwards && physics->velocity.y < 0) {
+            physics->velocity.y = 0;
+        }
+        if ((physics->colliding_side & Rightwards) == Rightwards && physics->velocity.x > 0) {
+            physics->velocity.x = 0;
+        }
+        if ((physics->colliding_side & Leftwards) == Leftwards && physics->velocity.x < 0) {
+            physics->velocity.x= 0;
+        }
+
         physics->colliding_side = 0;
         transform->position += physics->velocity * deltaT;
         physics->position = transform->position;
