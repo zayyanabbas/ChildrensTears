@@ -56,25 +56,29 @@ namespace ChildrensTears {
                     auto col2 = &coord.getComponent<TransformComponent>(collider);
 
                     int colliding_side = getCollidingSide(AABB(col1->position-col1_phys->velocity,col1->size),col1_phys->velocity,AABB(col2->position,col2->size));
+                    entity_registry.getEntity(ent_id)->onCollision(collider, colliding_side);
                     if (!col1_phys->isStatic && (col1_phys->colliding_side&colliding_side) != colliding_side) {
                         col1->position = getCorrectedLocation(AABB(col1->position,col1->size),col1_phys->velocity,AABB(col2->position,col2->size),colliding_side);
                         col1_phys->colliding_side |= colliding_side;
-
-                        auto col2_phys = &coord.getComponent<PhysicsComponent>(collider);
-
-                        if (colliding_side == Leftwards) {
-                            col2_phys->colliding_side |= Rightwards;
-                        }
-                        else if (colliding_side == Rightwards) {
-                            col2_phys->colliding_side |= Leftwards;
-                        }
-                        else if (colliding_side == Upwards) {
-                            col2_phys->colliding_side |= Downwards;
-                        }
-                        else if (colliding_side == Downwards) {
-                            col2_phys->colliding_side |= Upwards;
-                        }
                     }
+
+                    auto col2_phys = &coord.getComponent<PhysicsComponent>(collider);
+                    int col2_colliding_side = 0;
+
+                    if (colliding_side == Leftwards) {
+                        col2_colliding_side = Rightwards;
+                    }
+                    else if (colliding_side == Rightwards) {
+                        col2_colliding_side = Leftwards;
+                    }
+                    else if (colliding_side == Upwards) {
+                        col2_colliding_side = Downwards;
+                    }
+                    else if (colliding_side == Downwards) {
+                        col2_colliding_side = Upwards;
+                    }
+                    col2_phys->colliding_side |= col2_colliding_side;
+                    entity_registry.getEntity(collider)->onCollision(ent_id, col2_colliding_side);
                 }
             }
         }
