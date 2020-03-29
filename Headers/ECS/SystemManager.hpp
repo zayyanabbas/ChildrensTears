@@ -28,7 +28,8 @@ namespace ChildrensTears {
 
         void entityDestroyed(EntityID entity) {
             for (auto& i : systems) {
-                i.second->entities.erase(i.second->entities.begin() + entity);
+                i.second->entities[entity] = i.second->entities[i.second->entities.size()-1];
+                i.second->entities.pop_back();
             }
         }
     };
