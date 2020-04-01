@@ -69,7 +69,7 @@ namespace ChildrensTears {
         }
 
         uint32_t getLatestID() {
-            return entManager->latest_new_id;
+            return entManager->size;
         }
     };
 }

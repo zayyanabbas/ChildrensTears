@@ -12,11 +12,9 @@ namespace ChildrensTears {
     class EntityManager {
     private:
         std::vector<Entity> entities;
-        
+    public:
         // Total amount of entities in the manager
         EntityID size = 0;
-    public:
-        EntityID latest_new_id;
         
         // Adding entity to vector
         void createEntity();
