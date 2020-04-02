@@ -10,7 +10,6 @@ namespace ChildrensTears {
 
         // Increase the size
         ++size;
-        ++latest_new_id;
     }
 
     void EntityManager::destroyEntity(EntityID ID) {

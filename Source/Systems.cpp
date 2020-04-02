@@ -1,10 +1,8 @@
 #include "../Headers/Systems.hpp"
 #include "../Headers/ECS/Coordinator.hpp"
-#include "../Headers/EntityRegistry.hpp"
 #include "../Headers/CollisionHandling.hpp"
 
 extern ChildrensTears::Coordinator coord;
-extern ChildrensTears::EntityRegistry entity_registry;
 
 namespace ChildrensTears {
     void PhysicsSystem::update(EntityID id, float deltaT) {
@@ -52,10 +50,6 @@ namespace ChildrensTears {
     std::vector<EntityID> TransformSystem::getIntersecting(AABB range, EntityID id, std::vector<EntityID> list) {
         auto transform = &coord.getComponent<TransformComponent>(id);
         std::vector<EntityID> ret;
-
-        if (entity_registry.getEntity(id) == nullptr) {
-            return ret;
-        }
 
         for (auto& c : list) {
             if (c != id) {
