@@ -56,4 +56,8 @@ namespace ChildrensTears {
 
         std::shared_ptr<uint32_t> id;
     };
+    
+    struct InputComponent {
+        std::function<void(sf::Keyboard::Key)> onKeyPress;
+    };
 }

@@ -24,4 +24,9 @@ namespace ChildrensTears {
     public:
         void drawRenderable(EntityID id, sf::RenderTarget* renderArea);
     };
+
+    class InputSystem : public bSystem {
+    public:
+        void keyboardCallBack(EntityID id, sf::Keyboard::Key key);
+    };
 }

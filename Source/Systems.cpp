@@ -76,4 +76,8 @@ namespace ChildrensTears {
         renderArea->draw(render->sprite);
     }
 
+    void InputSystem::keyboardCallBack(EntityID entity, sf::Keyboard::Key key) {
+        auto input = &coord.getComponent<InputComponent>(entity);
+        input->onKeyPress(key);
+    }
 }
