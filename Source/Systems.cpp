@@ -13,22 +13,59 @@ namespace ChildrensTears {
             physics->velocity.y += physics->mass * physics->g_accel * deltaT;
         }
 
-        if ((physics->colliding_side & Downwards) == Downwards && physics->velocity.y > 0) {
-            physics->velocity.y = 0;
+        if ((physics->colliding_side & Leftwards) == Leftwards) {
+            if (physics->velocity.x < 0) physics->velocity.x = 0;
         }
-        if ((physics->colliding_side & Upwards) == Upwards && physics->velocity.y < 0) {
-            physics->velocity.y = 0;
+        if ((physics->colliding_side & Rightwards) == Rightwards) {
+            if (physics->velocity.x > 0) physics->velocity.x = 0;
         }
-        if ((physics->colliding_side & Rightwards) == Rightwards && physics->velocity.x > 0) {
-            physics->velocity.x = 0;
+        if ((physics->colliding_side & Upwards) == Upwards) {
+            if (physics->velocity.y < 0) physics->velocity.y = 0;
         }
-        if ((physics->colliding_side & Leftwards) == Leftwards && physics->velocity.x < 0) {
-            physics->velocity.x= 0;
+        if ((physics->colliding_side & Downwards) == Downwards) {
+            if (physics->velocity.y > 0) physics->velocity.y = 0;
         }
 
         physics->colliding_side = 0;
         transform->position += physics->velocity * deltaT;
         physics->position = transform->position;
+    }
+
+    void PhysicsSystem::doCollision(EntityID id, std::vector<EntityID> possible_colliders) {
+        auto col1 = &coord.getComponent<PhysicsComponent>(id);
+        for (auto& collider : possible_colliders) {
+            if (id == collider) continue;
+            auto col2 = &coord.getComponent<PhysicsComponent>(collider);
+            if (!AABB(col1->position, col1->size).checkIntersection(AABB(col2->position, col2->size))) continue;
+
+            int colliding_side = getCollidingSide(AABB(col1->position - col1->velocity, col1->size), col1->velocity, AABB(col2->position, col2->size));
+            
+            if (col1->onCollision != nullptr) col1->onCollision(collider, colliding_side);
+            if (!col1->isStatic && (col1->colliding_side & colliding_side) != colliding_side) {
+                auto col1_transform = &coord.getComponent<TransformComponent>(id);
+                col1_transform->position = getCorrectedLocation(AABB(col1->position,col1->size),col1->velocity,AABB(col2->position,col2->size),colliding_side);
+                col1->colliding_side |= colliding_side;
+            }
+            
+            int col2_col_side = 0;
+            switch (colliding_side) {
+            case Leftwards:
+                col2_col_side = Rightwards;
+                break;
+            case Rightwards:
+                col2_col_side = Leftwards;
+                break;
+            case Upwards:
+                col2_col_side = Downwards;
+                break;
+            case Downwards:
+                col2_col_side = Upwards;
+                break;
+            }
+            col2->colliding_side |= col2_col_side;
+            
+            if (col2->onCollision != nullptr) col2->onCollision(id, col2_col_side);
+        }
     }
     
     void TransformSystem::update() {
@@ -76,8 +113,24 @@ namespace ChildrensTears {
         renderArea->draw(render->sprite);
     }
 
-    void InputSystem::keyboardCallBack(EntityID entity, sf::Keyboard::Key key) {
-        auto input = &coord.getComponent<InputComponent>(entity);
-        input->onKeyPress(key);
+    void InputSystem::update(const sf::RenderWindow& target) {
+        for (auto& entity : entities) {
+            auto input = &coord.getComponent<InputComponent>(entity);
+            if (target.hasFocus()) {
+                input->keyboardInput();
+            }
+        }
+    }
+
+    void CameraSystem::updateWindow(EntityID id, sf::RenderWindow& target) {
+        auto camera = &coord.getComponent<CameraComponent>(id);
+        target.setView(camera->view);
+    }
+
+    void CameraSystem::updateCameras(sf::RenderWindow& win) {
+        for (auto& entity : entities) {
+            auto cam = &coord.getComponent<CameraComponent>(entity);
+            if (cam->update) cam->update(win);
+        }
     }
 }

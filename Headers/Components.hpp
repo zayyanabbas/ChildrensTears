@@ -4,27 +4,10 @@
 #include <SFML/Graphics.hpp>
 #include <math.h>
 
+extern ChildrensTears::Coordinator coord;
+
 namespace ChildrensTears {
     // All components have a pointer to the EntityID
-
-    // Physics component
-
-    struct PhysicsComponent {
-        std::optional<std::string> tag;
-
-        bool hasGravity = false;
-        bool isStatic = false;
-
-        Position position;
-        Size size;
-        int colliding_side = 0;
-        Vec2<float> velocity{0,0};
-    
-        float mass = 1.0;
-        float g_accel = 300;
-
-        std::shared_ptr<uint32_t> id;
-    };
 
     // Transform component
     // Contains position, size, scale, angle
@@ -37,6 +20,28 @@ namespace ChildrensTears {
 
         float angle;
         
+        std::shared_ptr<uint32_t> id;
+    };
+
+    // Physics component
+    struct PhysicsComponent {
+    public:
+        std::optional<std::string> tag;
+
+        bool hasGravity = false;
+        bool isStatic = false;
+
+        int colliding_side = 0;
+        Vec2<float> velocity{0,0};
+    
+        float mass = 1.0;
+        float g_accel = 300;
+
+        Position position{0,0};
+        Size size{0,0};
+
+        std::function<void(EntityID, int)> onCollision;
+
         std::shared_ptr<uint32_t> id;
     };
 
@@ -58,6 +63,14 @@ namespace ChildrensTears {
     };
     
     struct InputComponent {
-        std::function<void(sf::Keyboard::Key)> onKeyPress;
+        std::function<void()> keyboardInput;
+        std::shared_ptr<uint32_t> id;
+    };
+
+    struct CameraComponent {
+        sf::View view;
+        std::function<void(sf::RenderWindow&)> update;
+
+        void bindCamera(sf::RenderWindow&);
     };
 }

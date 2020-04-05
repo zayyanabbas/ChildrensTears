@@ -18,6 +18,7 @@ namespace ChildrensTears {
     class PhysicsSystem : public bSystem {
     public:
         void update(EntityID id, float delT);
+        void doCollision(EntityID id, std::vector<EntityID> colliders);
     };
 
     class RenderSystem : public bSystem {
@@ -27,6 +28,12 @@ namespace ChildrensTears {
 
     class InputSystem : public bSystem {
     public:
-        void keyboardCallBack(EntityID id, sf::Keyboard::Key key);
+        void update(const sf::RenderWindow& target);
+    };
+
+    class CameraSystem : public bSystem {
+    public:
+        void updateWindow(EntityID id, sf::RenderWindow& target);
+        void updateCameras(sf::RenderWindow& win);
     };
 }

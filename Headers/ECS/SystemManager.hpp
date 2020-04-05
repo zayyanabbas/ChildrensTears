@@ -28,6 +28,7 @@ namespace ChildrensTears {
 
         void entityDestroyed(EntityID entity) {
             for (auto& i : systems) {
+                if (std::find(i.second->entities.begin(), i.second->entities.end(), entity) == i.second->entities.end()) continue;
                 i.second->entities[entity] = i.second->entities[i.second->entities.size()-1];
                 i.second->entities.pop_back();
             }

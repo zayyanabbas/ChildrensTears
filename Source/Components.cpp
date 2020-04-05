@@ -11,4 +11,8 @@ namespace ChildrensTears {
         texture = std::make_shared<sf::Texture>(p_texture);
         sprite.setTexture(*texture);
     }
+
+    void CameraComponent::bindCamera(sf::RenderWindow& win) {
+        win.setView(view);
+    }
 }
