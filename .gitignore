@@ -1,10 +1,10 @@
 # Custom build script in VSCode
-./.vscode/
+.vscode/
 
 # Example code
-./Source/
+Source/
 
 # Build result
-./ChildrensTears.o
+ChildrensTears.o
 
-./Assets/
+Assets
