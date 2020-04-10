@@ -4,8 +4,6 @@
 #include <SFML/Graphics.hpp>
 #include <math.h>
 
-extern ChildrensTears::Coordinator coord;
-
 namespace ChildrensTears {
     // All components have a pointer to the EntityID
 
@@ -40,7 +38,7 @@ namespace ChildrensTears {
         Position position{0,0};
         Size size{0,0};
 
-        std::function<void(EntityID, int)> onCollision;
+        std::function<void(EntityID, int, Coordinator&)> onCollision;
 
         std::shared_ptr<uint32_t> id;
     };
@@ -63,13 +61,13 @@ namespace ChildrensTears {
     };
     
     struct InputComponent {
-        std::function<void()> keyboardInput;
+        std::function<void(Coordinator&)> keyboardInput;
         std::shared_ptr<uint32_t> id;
     };
 
     struct CameraComponent {
         sf::View view;
-        std::function<void(sf::RenderWindow&)> update;
+        std::function<void(sf::RenderWindow&, Coordinator&)> update;
 
         void bindCamera(sf::RenderWindow&);
     };

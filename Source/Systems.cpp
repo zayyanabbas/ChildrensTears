@@ -2,10 +2,8 @@
 #include "../Headers/ECS/Coordinator.hpp"
 #include "../Headers/CollisionHandling.hpp"
 
-extern ChildrensTears::Coordinator coord;
-
 namespace ChildrensTears {
-    void PhysicsSystem::update(EntityID id, float deltaT) {
+    void PhysicsSystem::update(EntityID id, float deltaT, Coordinator& coord) {
         auto physics = &coord.getComponent<PhysicsComponent>(id);
         auto transform = &coord.getComponent<TransformComponent>(id);
 
@@ -31,7 +29,7 @@ namespace ChildrensTears {
         physics->position = transform->position;
     }
 
-    void PhysicsSystem::doCollision(EntityID id, std::vector<EntityID> possible_colliders) {
+    void PhysicsSystem::doCollision(EntityID id, std::vector<EntityID> possible_colliders, Coordinator& coord) {
         auto col1 = &coord.getComponent<PhysicsComponent>(id);
         for (auto& collider : possible_colliders) {
             if (id == collider) continue;
@@ -40,7 +38,7 @@ namespace ChildrensTears {
 
             int colliding_side = getCollidingSide(AABB(col1->position - col1->velocity, col1->size), col1->velocity, AABB(col2->position, col2->size));
             
-            if (col1->onCollision != nullptr) col1->onCollision(collider, colliding_side);
+            if (col1->onCollision != nullptr) col1->onCollision(collider, colliding_side, coord);
             if (!col1->isStatic && (col1->colliding_side & colliding_side) != colliding_side) {
                 auto col1_transform = &coord.getComponent<TransformComponent>(id);
                 col1_transform->position = getCorrectedLocation(AABB(col1->position,col1->size),col1->velocity,AABB(col2->position,col2->size),colliding_side);
@@ -64,11 +62,11 @@ namespace ChildrensTears {
             }
             col2->colliding_side |= col2_col_side;
             
-            if (col2->onCollision != nullptr) col2->onCollision(id, col2_col_side);
+            if (col2->onCollision != nullptr) col2->onCollision(id, col2_col_side, coord);
         }
     }
     
-    void TransformSystem::update() {
+    void TransformSystem::update(Coordinator& coord) {
         for (auto& entity : entities) {
             auto transform = &coord.getComponent<TransformComponent>(entity);
             quad->insert(transform->position, entity);
@@ -84,7 +82,7 @@ namespace ChildrensTears {
         quad = std::make_unique<QuadTree<EntityID>>(screen);
     }
 
-    std::vector<EntityID> TransformSystem::getIntersecting(AABB range, EntityID id, std::vector<EntityID> list) {
+    std::vector<EntityID> TransformSystem::getIntersecting(AABB range, EntityID id, std::vector<EntityID> list, Coordinator& coord) {
         auto transform = &coord.getComponent<TransformComponent>(id);
         std::vector<EntityID> ret;
 
@@ -101,7 +99,7 @@ namespace ChildrensTears {
         return ret;
     }
 
-    void RenderSystem::drawRenderable(EntityID entity, sf::RenderTarget* renderArea) {
+    void RenderSystem::drawRenderable(EntityID entity, sf::RenderTarget* renderArea, Coordinator& coord) {
         auto transform = &coord.getComponent<TransformComponent>(entity);
         auto render    = &coord.getComponent<RenderComponent>(entity);
 
@@ -113,24 +111,24 @@ namespace ChildrensTears {
         renderArea->draw(render->sprite);
     }
 
-    void InputSystem::update(const sf::RenderWindow& target) {
+    void InputSystem::update(const sf::RenderWindow& target, Coordinator& coord) {
         for (auto& entity : entities) {
             auto input = &coord.getComponent<InputComponent>(entity);
             if (target.hasFocus()) {
-                input->keyboardInput();
+                input->keyboardInput(coord);
             }
         }
     }
 
-    void CameraSystem::updateWindow(EntityID id, sf::RenderWindow& target) {
+    void CameraSystem::updateWindow(EntityID id, sf::RenderWindow& target, Coordinator& coord) {
         auto camera = &coord.getComponent<CameraComponent>(id);
         target.setView(camera->view);
     }
 
-    void CameraSystem::updateCameras(sf::RenderWindow& win) {
+    void CameraSystem::updateCameras(sf::RenderWindow& win, Coordinator& coord) {
         for (auto& entity : entities) {
             auto cam = &coord.getComponent<CameraComponent>(entity);
-            if (cam->update) cam->update(win);
+            if (cam->update) cam->update(win, coord);
         }
     }
 }
