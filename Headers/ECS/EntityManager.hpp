@@ -2,16 +2,16 @@
 #include "../Constants.hpp"
 
 namespace ChildrensTears {
-    struct Entity {
+    struct EntityData {
         EntityID entityID;
         Signature entitySignature;
 
-        Entity(EntityID p_entityID, Signature p_entitySignature) : entityID(p_entityID), entitySignature(p_entitySignature) {}
+        EntityData(EntityID p_entityID, Signature p_entitySignature) : entityID(p_entityID), entitySignature(p_entitySignature) {}
     };
 
     class EntityManager {
     private:
-        std::vector<Entity> entities;
+        std::vector<EntityData> entities;
     public:
         // Total amount of entities in the manager
         EntityID size = 0;

@@ -6,7 +6,7 @@ namespace ChildrensTears {
         assert(size < Constants::MaxEntities && "Reached maximum entity limit");
 
         // ID is current total number of entities in manager
-        entities.push_back(Entity(size,Signature()));
+        entities.push_back(EntityData(size,Signature()));
 
         // Increase the size
         ++size;
