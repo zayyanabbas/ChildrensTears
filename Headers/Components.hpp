@@ -35,9 +35,6 @@ namespace ChildrensTears {
         float mass = 1.0;
         float g_accel = 300;
 
-        Position position{0,0};
-        Size size{0,0};
-
         std::function<void(EntityID, int, Coordinator&)> onCollision;
 
         std::shared_ptr<uint32_t> id;
@@ -52,7 +49,7 @@ namespace ChildrensTears {
         sf::Sprite sprite;
 
         // Load the texture from a path
-        void loadTexture(const char* path);
+        void loadTexture(std::string path);
 
         // Point the texture to another address
         void loadTexture(sf::Texture& p_texture);
@@ -70,5 +67,6 @@ namespace ChildrensTears {
         std::function<void(sf::RenderWindow&, Coordinator&)> update;
 
         void bindCamera(sf::RenderWindow&);
+        std::shared_ptr<uint32_t> id;
     };
 }
