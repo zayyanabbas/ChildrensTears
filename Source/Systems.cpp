@@ -26,22 +26,23 @@ namespace ChildrensTears {
 
         physics->colliding_side = 0;
         transform->position += physics->velocity * deltaT;
-        physics->position = transform->position;
     }
 
     void PhysicsSystem::doCollision(EntityID id, std::vector<EntityID> possible_colliders, Coordinator& coord) {
         auto col1 = &coord.getComponent<PhysicsComponent>(id);
+        auto col1t = &coord.getComponent<TransformComponent>(id);
         for (auto& collider : possible_colliders) {
             if (id == collider) continue;
             auto col2 = &coord.getComponent<PhysicsComponent>(collider);
-            if (!AABB(col1->position, col1->size).checkIntersection(AABB(col2->position, col2->size))) continue;
+            auto col2t = &coord.getComponent<TransformComponent>(collider);
+            if (!AABB(col1t->position, col1t->size).checkIntersection(AABB(col2t->position, col2t->size))) continue;
 
-            int colliding_side = getCollidingSide(AABB(col1->position - col1->velocity, col1->size), col1->velocity, AABB(col2->position, col2->size));
+            int colliding_side = getCollidingSide(AABB(col1t->position - col1->velocity, col1t->size), col1->velocity, AABB(col2t->position, col2t->size));
             
             if (col1->onCollision != nullptr) col1->onCollision(collider, colliding_side, coord);
             if (!col1->isStatic && (col1->colliding_side & colliding_side) != colliding_side) {
                 auto col1_transform = &coord.getComponent<TransformComponent>(id);
-                col1_transform->position = getCorrectedLocation(AABB(col1->position,col1->size),col1->velocity,AABB(col2->position,col2->size),colliding_side);
+                col1_transform->position = getCorrectedLocation(AABB(col1t->position,col1t->size),col1->velocity,AABB(col2t->position,col2t->size),colliding_side);
                 col1->colliding_side |= colliding_side;
             }
             
