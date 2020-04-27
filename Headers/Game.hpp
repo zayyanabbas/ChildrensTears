@@ -11,6 +11,7 @@ namespace ChildrensTears {
         std::shared_ptr<PhysicsSystem> physics_system;
         std::shared_ptr<CameraSystem> camera_system;
         std::shared_ptr<InputSystem> input_system;
+        std::shared_ptr<SpritesheetAnimationSystem> spritesheet_system;
 
         sf::RenderWindow win;
     public:

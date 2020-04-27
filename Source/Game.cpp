@@ -9,12 +9,14 @@ namespace ChildrensTears {
         physics_system = coord.registerSystem<PhysicsSystem>();
         camera_system = coord.registerSystem<CameraSystem>();
         input_system = coord.registerSystem<InputSystem>();
+        spritesheet_system = coord.registerSystem<SpritesheetAnimationSystem>();
 
         coord.registerComponent<TransformComponent>();
         coord.registerComponent<RenderComponent>();
         coord.registerComponent<InputComponent>();
         coord.registerComponent<PhysicsComponent>();
         coord.registerComponent<CameraComponent>();
+        coord.registerComponent<SpritesheetComponent>();
 
         win.create(sf::VideoMode(winW,winH), winName);
     }
@@ -44,6 +46,7 @@ namespace ChildrensTears {
                 render_system->drawRenderable(i, &win, coord);
                 physics_system->update(i, deltaT, coord);
                 physics_system->doCollision(i, transform_system->getIntersecting(frame, i, transform_system->getInRange(frame), coord), coord);
+                spritesheet_system->updateAnimation(i, deltaT, &win, coord);
             }
 
             win.display();

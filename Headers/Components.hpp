@@ -69,4 +69,27 @@ namespace ChildrensTears {
         void bindCamera(sf::RenderWindow&);
         std::shared_ptr<uint32_t> id;
     };
+
+    struct SpritesheetComponent {
+        std::map<std::string, std::shared_ptr<sf::Texture>> animations;
+
+        void playAnimation(std::string anim_name, Coordinator& coord);
+
+        void insertAnimation(std::string anim_name, sf::Texture& spritesheet);
+        void insertAnimation(std::string anim_name, std::string anim_path);
+
+        Vec2<float> texture_size;
+        Vec2<float> texture_pos{0,0};
+
+        int current_frame = 0;
+        int max_frame;
+
+        float fps;
+        float anim_time;
+
+        bool looping = true;
+        std::string current_animation;
+
+        std::shared_ptr<uint32_t> id;
+    };
 }

@@ -36,4 +36,9 @@ namespace ChildrensTears {
         void updateWindow(EntityID id, sf::RenderWindow& target, Coordinator& coord);
         void updateCameras(sf::RenderWindow& win, Coordinator& coord);
     };
+
+    class SpritesheetAnimationSystem : public bSystem {
+    public:
+        void updateAnimation(EntityID id, float delta_time, sf::RenderTarget* target, Coordinator& coord);
+    };
 }

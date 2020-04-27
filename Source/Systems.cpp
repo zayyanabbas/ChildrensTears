@@ -105,7 +105,6 @@ namespace ChildrensTears {
         auto render    = &coord.getComponent<RenderComponent>(entity);
 
         // Update position of the sprite
-        render->sprite.setTextureRect({0, 0, static_cast<int>(transform->size.x), static_cast<int>(transform->size.y)});
         render->sprite.setPosition(transform->position.x, transform->position.y);
 
         // Draw to render area
@@ -130,6 +129,38 @@ namespace ChildrensTears {
         for (auto& entity : entities) {
             auto cam = &coord.getComponent<CameraComponent>(entity);
             if (cam->update) cam->update(win, coord);
+        }
+    }
+
+    void SpritesheetAnimationSystem::updateAnimation(EntityID id, float deltaTime, sf::RenderTarget* render_target, Coordinator& coord) {
+        auto spritesheet = &coord.getComponent<SpritesheetComponent>(id);
+        auto render = &coord.getComponent<RenderComponent>(id);
+        spritesheet->anim_time += deltaTime;
+
+        if (spritesheet->anim_time > 1/spritesheet->fps) {
+            // Go to next frame
+            spritesheet->texture_pos.x += spritesheet->texture_size.x;
+
+            // if out of bounds
+            if (spritesheet->texture_pos.x >= render->sprite.getTexture()->getSize().x) {
+                // Go to start
+                spritesheet->texture_pos.x = 0;
+
+                // Next layer down
+                spritesheet->texture_pos.y += spritesheet->texture_size.y;
+
+                // If out of bounds
+                if (spritesheet->texture_pos.y >= render->sprite.getTexture()->getSize().y) {
+                    // Go to start
+                    spritesheet->texture_pos.y = 0;
+                }
+            }
+
+            std::cout << spritesheet->texture_pos.x << " " << spritesheet->texture_pos.y << std::endl;
+
+            render->sprite.setTextureRect(sf::IntRect({spritesheet->texture_pos.x,spritesheet->texture_pos.y},{spritesheet->texture_size.x, spritesheet->texture_size.y}));
+
+            spritesheet->anim_time = 0;
         }
     }
 }
