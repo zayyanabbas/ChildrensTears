@@ -156,8 +156,6 @@ namespace ChildrensTears {
                 }
             }
 
-            std::cout << spritesheet->texture_pos.x << " " << spritesheet->texture_pos.y << std::endl;
-
             render->sprite.setTextureRect(sf::IntRect({spritesheet->texture_pos.x,spritesheet->texture_pos.y},{spritesheet->texture_size.x, spritesheet->texture_size.y}));
 
             spritesheet->anim_time = 0;

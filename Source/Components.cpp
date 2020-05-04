@@ -16,10 +16,9 @@ namespace ChildrensTears {
         win.setView(view);
     }
 
-    void SpritesheetComponent::playAnimation(std::string anim_name, Coordinator& coord) {
+    void SpritesheetComponent:: playAnimation(std::string anim_name, Coordinator& coord) {
         current_animation = anim_name;
-        //assert(animations.find(anim_name) == animations.end() && "Animation not in map");
-        
+        assert(animations.find(anim_name) != animations.end() && "Animation not in map");
         auto render = &coord.getComponent<RenderComponent>(*id);
         render->sprite.setTexture(*animations.find(anim_name)->second);
         render->sprite.setTextureRect({texture_pos.x, texture_pos.y, texture_size.x, texture_size.y});
