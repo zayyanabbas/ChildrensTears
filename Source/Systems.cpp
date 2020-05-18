@@ -105,7 +105,7 @@ namespace ChildrensTears {
         auto render    = &coord.getComponent<RenderComponent>(entity);
 
         // Update position of the sprite
-        render->sprite.setPosition(transform->position.x, transform->position.y);
+        render->sprite.setPosition(transform->position.x + render->pos_offset.x, transform->position.y + render->pos_offset.y);
 
         // Draw to render area
         renderArea->draw(render->sprite);
@@ -139,25 +139,20 @@ namespace ChildrensTears {
 
         if (spritesheet->anim_time > 1/spritesheet->fps) {
             // Go to next frame
-            spritesheet->texture_pos.x += spritesheet->texture_size.x;
 
-            // if out of bounds
-            if (spritesheet->texture_pos.x >= render->sprite.getTexture()->getSize().x) {
-                // Go to start
-                spritesheet->texture_pos.x = 0;
-
-                // Next layer down
-                spritesheet->texture_pos.y += spritesheet->texture_size.y;
-
-                // If out of bounds
-                if (spritesheet->texture_pos.y >= render->sprite.getTexture()->getSize().y) {
-                    // Go to start
-                    spritesheet->texture_pos.y = 0;
-                }
+            // Divide current frame by the number of columns (calculated by total size/texture size), get ceiling value, subtract one
+            int row = (int)ceil(spritesheet->current_frame/(render->sprite.getTexture()->getSize().x/spritesheet->texture_size.x))-1;
+            int col = (int)spritesheet->current_frame-ceil(spritesheet->current_frame/(render->sprite.getTexture()->getSize().x/spritesheet->texture_size.x)-1)*(render->sprite.getTexture()->getSize().x/spritesheet->texture_size.x)-1;
+            
+            render->sprite.setTextureRect(sf::IntRect({col*spritesheet->texture_size.x,row*spritesheet->texture_size.y},{spritesheet->texture_size.x, spritesheet->texture_size.y}));
+            
+            ++spritesheet->current_frame;
+            if (spritesheet->current_frame > spritesheet->max_frame) {
+                spritesheet->current_frame = spritesheet->min_frame;
             }
 
-            render->sprite.setTextureRect(sf::IntRect({spritesheet->texture_pos.x,spritesheet->texture_pos.y},{spritesheet->texture_size.x, spritesheet->texture_size.y}));
-
+            std::cout << col*spritesheet->texture_size.x << " " << row*spritesheet->texture_size.y << std::endl;
+            
             spritesheet->anim_time = 0;
         }
     }

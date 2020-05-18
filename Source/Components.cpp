@@ -16,12 +16,23 @@ namespace ChildrensTears {
         win.setView(view);
     }
 
-    void SpritesheetComponent:: playAnimation(std::string anim_name, Coordinator& coord) {
+    void SpritesheetComponent::playAnimation(std::string anim_name, int min, int max, Coordinator& coord) {
         current_animation = anim_name;
+        
         assert(animations.find(anim_name) != animations.end() && "Animation not in map");
+        
         auto render = &coord.getComponent<RenderComponent>(*id);
+
+        min_frame = min;
+        max_frame = max;
+        current_frame = min;
+
         render->sprite.setTexture(*animations.find(anim_name)->second);
-        render->sprite.setTextureRect({texture_pos.x, texture_pos.y, texture_size.x, texture_size.y});
+
+        int row = (int)ceil(current_frame/(render->sprite.getTexture()->getSize().x/texture_size.x))-1;
+        int col = (int)current_frame-ceil(current_frame/(render->sprite.getTexture()->getSize().x/texture_size.x)-1)*(render->sprite.getTexture()->getSize().x/texture_size.x)-1;
+        
+        render->sprite.setTextureRect({col*texture_size.x, row*texture_size.y, texture_size.x, texture_size.y});
     }
 
     void SpritesheetComponent::insertAnimation(std::string anim_name, sf::Texture& texture) {

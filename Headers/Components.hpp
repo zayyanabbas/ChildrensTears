@@ -24,7 +24,7 @@ namespace ChildrensTears {
     // Physics component
     struct PhysicsComponent {
     public:
-        std::optional<std::string> tag;
+        std::string tag;
 
         bool hasGravity = false;
         bool isStatic = false;
@@ -45,6 +45,8 @@ namespace ChildrensTears {
     struct RenderComponent {
         std::optional<std::string> tag;
         
+        Vec2<float> pos_offset{0,0};
+
         std::shared_ptr<sf::Texture> texture;
         sf::Sprite sprite;
 
@@ -73,19 +75,19 @@ namespace ChildrensTears {
     struct SpritesheetComponent {
         std::map<std::string, std::shared_ptr<sf::Texture>> animations;
 
-        void playAnimation(std::string anim_name, Coordinator& coord);
+        void playAnimation(std::string anim_name, int min_frame, int max_frame, Coordinator& coord);
 
         void insertAnimation(std::string anim_name, sf::Texture& spritesheet);
         void insertAnimation(std::string anim_name, std::string anim_path);
 
         Vec2<float> texture_size;
-        Vec2<float> texture_pos{0,0};
 
         int current_frame = 0;
-        int max_frame;
+        int max_frame = 0;
+        int min_frame = 0;
 
         float fps;
-        float anim_time;
+        float anim_time = 0.f;
 
         bool looping = true;
         std::string current_animation;
