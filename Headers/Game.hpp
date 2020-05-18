@@ -1,38 +1,25 @@
+#pragma once
 #include "Systems.hpp"
-#include "Utils/Entities.hpp"
-#include "EntityRegistry.hpp"
-#include <SFML/Graphics.hpp>
-
-extern ChildrensTears::EntityRegistry entity_registry;
+#include "Utils/GamestateManager.hpp"
+#include "Utils/ResourceManager.hpp"
 
 namespace ChildrensTears {
     class Game {
     private:
-        // What the game will render to
-        sf::RenderTarget* renderTarget;
-
-        // Systems of the engine
-        std::shared_ptr<PhysicsSystem> physics_system;
-        std::shared_ptr<RenderSystem> render_system;
         std::shared_ptr<TransformSystem> transform_system;
-
-        // Time between frames
-        float deltaTime{0.f};
+        std::shared_ptr<RenderSystem> render_system;
+        std::shared_ptr<PhysicsSystem> physics_system;
+        std::shared_ptr<CameraSystem> camera_system;
+        std::shared_ptr<InputSystem> input_system;
+        std::shared_ptr<SpritesheetAnimationSystem> spritesheet_system;
     public:
-        // Keeps list of pointers to all entities
+        sf::RenderWindow win;
+        Coordinator coord;
+        GamestateManager gamestate_manager;
+        ResourceManager resource_manager;
+        
+        Game(std::string window_handle, int window_width, int window_height);
 
-        // Constructor for the Game class
-        // Registers different part of the engine
-        Game();
-
-        // Game loop
-        // Calls all the systems, gets delta time
         void loop();
-
-        // Returns the delta time
-        const float getDeltaTime();
-
-        // Sets what the game renders to
-        void setRenderTarget(sf::RenderTarget* target);
     };
 }

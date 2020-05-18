@@ -1,10 +1,11 @@
 # Custom build script in VSCode
-./.vscode/
-
-# Example code
-./Source/
+.vscode/
 
 # Build result
-./ChildrensTears.o
+*.o
 
-./Assets/
+# Sample code I'm using to test the engine
+SampleCode
+
+# Debugging file by valgrind.
+massif.*.*

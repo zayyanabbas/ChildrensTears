@@ -12,7 +12,7 @@ namespace ChildrensTears {
 
         // Total number of components
         // Can't be changed out of code
-        static constexpr uint8_t MaxComponents = 4;
+        static constexpr uint8_t MaxComponents = 10;
     }
 
     // Convenient aliases

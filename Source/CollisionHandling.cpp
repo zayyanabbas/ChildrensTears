@@ -1,20 +1,19 @@
 #include "../Headers/CollisionHandling.hpp"
 
 namespace ChildrensTears {
-    static int getSideFromSlopeComparison(int side, float velSlope, float cornerSlope) {
+    int getSideFromSlopeComparison(int side, float velSlope, float cornerSlope) {
         if ((side & Upwards) == Upwards) {
             if ((side & Rightwards) == Rightwards) return velSlope > cornerSlope ? Upwards : Rightwards;
             else if ((side & Leftwards) == Leftwards) return velSlope < cornerSlope ? Upwards : Leftwards;
         }
         else if ((side & Downwards) == Downwards) {
             if ((side & Rightwards) == Rightwards) return velSlope < cornerSlope ? Downwards : Rightwards;
-            else if ((side & Leftwards) == Leftwards) return velSlope < cornerSlope ? Downwards : Leftwards;
+            else if ((side & Leftwards) == Leftwards) return velSlope > cornerSlope ? Downwards : Leftwards;
         }
-
         return None;
-    }
+    }   
 
-    static int getCollidingSide(AABB col1, Vec2<float> velocity, AABB col2) {
+    int getCollidingSide(AABB col1, Vec2<float> velocity, AABB col2) {
         int side = None;
         // Gradient of the moving object's velocity
         float velocitySlope = velocity.y/velocity.x;
@@ -59,7 +58,7 @@ namespace ChildrensTears {
             // You'd be colliding downwards
             if (col1.position.y + col1.size.y <= col2.position.y) {
                 side |= Downwards;
-                cornerRise = (col1.position.y + col1.size.y) - col2.position.y;
+                cornerRise = col2.position.y - (col1.position.y + col1.size.y);
             }
 
             // You're below the block
@@ -88,11 +87,11 @@ namespace ChildrensTears {
         return getSideFromSlopeComparison(side,velocitySlope,cornerRise/cornerRun);
     }
 
-    static Vec2<float> getCorrectedLocation(AABB col1, Vec2<float>& velocity, AABB col2, int colliding_side) {
+    Vec2<float> getCorrectedLocation(AABB col1, Vec2<float>& velocity, AABB col2, int colliding_side) {
         Vec2<float> correctedLocation = col1.position;
         switch (colliding_side) {
             case Leftwards:
-                correctedLocation.x = col2.position.x + col2.size.x;
+                correctedLocation.x = col2.position.x + col2.size.x ;
                 break;
             case Rightwards:
                 correctedLocation.x = col2.position.x - col1.size.x;

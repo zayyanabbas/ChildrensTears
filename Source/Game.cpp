@@ -1,82 +1,57 @@
-#include "../Headers/ECS/Coordinator.hpp"
 #include "../Headers/Game.hpp"
-#include "../Headers/Utils/DataStruct.hpp"
-#include "../Headers/CollisionHandling.hpp"
-#include <chrono>
-
-extern ChildrensTears::Coordinator coord;
-extern ChildrensTears::EntityRegistry entity_registry;
 
 namespace ChildrensTears {
-    Game::Game() {
-        // Register parts of the engine
-        physics_system = coord.registerSystem<PhysicsSystem>();
-        render_system = coord.registerSystem<RenderSystem>();
-        transform_system = coord.registerSystem<TransformSystem>();
+    Game::Game(std::string winName, int winW, int winH) {
+        coord.init();
 
-        coord.registerComponent<PhysicsComponent>();
-        coord.registerComponent<RenderComponent>();
+        transform_system = coord.registerSystem<TransformSystem>();
+        render_system = coord.registerSystem<RenderSystem>();
+        physics_system = coord.registerSystem<PhysicsSystem>();
+        camera_system = coord.registerSystem<CameraSystem>();
+        input_system = coord.registerSystem<InputSystem>();
+        spritesheet_system = coord.registerSystem<SpritesheetAnimationSystem>();
+
         coord.registerComponent<TransformComponent>();
+        coord.registerComponent<RenderComponent>();
+        coord.registerComponent<InputComponent>();
+        coord.registerComponent<PhysicsComponent>();
+        coord.registerComponent<CameraComponent>();
+        coord.registerComponent<SpritesheetComponent>();
+
+        win.create(sf::VideoMode(winW,winH), winName);
     }
 
     void Game::loop() {
-        // Take time at the start of the frame
+        static float deltaT = 0.f;
+        
         auto start = std::chrono::high_resolution_clock::now();
 
-        renderTarget->clear();
-
-        // Do Entity loop
-        for (auto& ent : entity_registry.getList()) {
-            ent->update(deltaTime);
-        }
-
-        // What the window can see right now
-        AABB windowFrame{{renderTarget->getView().getCenter().x - renderTarget->getView().getSize().x/2,
-                          renderTarget->getView().getCenter().y - renderTarget->getView().getSize().y/2},
-                          {renderTarget->getView().getSize().x, renderTarget->getView().getSize().y}};
-
-        transform_system->setScreen(windowFrame);
-
-        transform_system->update();
-
-        // Check collision
-
-        // For all the ones currently in the window
-        for (auto& ent_id : transform_system->getInRange(windowFrame)) {
-            // Run all the loops of the systems
-            render_system->drawRenderable(ent_id,renderTarget);
-            physics_system->update(ent_id, deltaTime);
-
-            // Check all the ones their colliding against
-            // And run onCollision
-            for (auto& collider : transform_system->getIntersecting(windowFrame, ent_id, transform_system->getInRange(windowFrame))) {
-
-                if (entity_registry.getEntity(ent_id) != nullptr && entity_registry.getEntity(collider) != nullptr) { 
-                    auto col1 = &coord.getComponent<TransformComponent>(ent_id);
-                    auto col2 = &coord.getComponent<TransformComponent>(collider);
-                    auto col1_phys = &coord.getComponent<PhysicsComponent>(ent_id);
-                    
-                    int colliding_side = getCollidingSide(AABB(col1->position-col1_phys->velocity,col1->size),col1_phys->velocity,AABB(col2->position,col2->size));
-                    if (!col1_phys->isStatic && (col1_phys->colliding_side&colliding_side) != colliding_side) {
-                        col1->position = getCorrectedLocation(AABB(col1->position,col1->size),col1_phys->velocity,AABB(col2->position,col2->size),colliding_side);
-                        col1_phys->colliding_side |= colliding_side;
-                    }
-                }
+        sf::Event event;
+        while (win.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                win.close();
             }
         }
 
-        //   Take time at the end of the frame
+        AABB frame = {{win.getView().getCenter().x - win.getSize().y/2 - 100,win.getView().getCenter().y - win.getSize().y/2 - 100},{win.getSize().x + 100, win.getSize().y + 100}};
+            
+        win.clear(sf::Color::White);
+            
+        transform_system->setScreen(frame);
+        transform_system->update(coord);
+        input_system->update(win, coord);
+
+        for (auto& i : transform_system->getInRange(frame)) {
+            camera_system->updateCameras(win, coord);
+            render_system->drawRenderable(i, &win, coord);
+            physics_system->update(i, deltaT, coord);
+            physics_system->doCollision(i, transform_system->getIntersecting(frame, i, transform_system->getInRange(frame), coord), coord);
+            spritesheet_system->updateAnimation(i, deltaT, &win, coord);
+        }
+
+        win.display();
+
         auto end = std::chrono::high_resolution_clock::now();
-
-        // Delta time would be the difference between each
-        deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(end-start).count();
-    }
-
-    const float Game::getDeltaTime() {
-        return deltaTime;
-    }
-
-    void Game::setRenderTarget(sf::RenderTarget* target) {
-        renderTarget = target;
+        deltaT = std::chrono::duration_cast<std::chrono::duration<float>>(end-start).count();
     }
 }
