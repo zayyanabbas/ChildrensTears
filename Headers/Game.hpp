@@ -12,9 +12,8 @@ namespace ChildrensTears {
         std::shared_ptr<CameraSystem> camera_system;
         std::shared_ptr<InputSystem> input_system;
         std::shared_ptr<SpritesheetAnimationSystem> spritesheet_system;
-
-        sf::RenderWindow win;
     public:
+        sf::RenderWindow win;
         Coordinator coord;
         GamestateManager gamestate_manager;
         ResourceManager resource_manager;
