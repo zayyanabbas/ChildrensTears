@@ -41,4 +41,11 @@ namespace ChildrensTears {
     public:
         void updateAnimation(EntityID id, float delta_time, sf::RenderTarget* target, Coordinator& coord);
     };
+
+    class StaticBackgroundSystem : public bSystem {
+    public:
+        void update(sf::View view, Coordinator& coord);
+    };
+
+    class MovingBackgroundSystem : public bSystem {};
 }
