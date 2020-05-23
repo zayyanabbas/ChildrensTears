@@ -10,6 +10,7 @@ namespace ChildrensTears {
         camera_system = coord.registerSystem<CameraSystem>();
         input_system = coord.registerSystem<InputSystem>();
         spritesheet_system = coord.registerSystem<SpritesheetAnimationSystem>();
+        static_bg_system = coord.registerSystem<StaticBackgroundSystem>();
 
         coord.registerComponent<TransformComponent>();
         coord.registerComponent<RenderComponent>();
@@ -45,7 +46,19 @@ namespace ChildrensTears {
             camera_system->updateCameras(win, coord);
             render_system->drawRenderable(i, &win, coord);
             physics_system->update(i, deltaT, coord);
-            physics_system->doCollision(i, transform_system->getIntersecting(frame, i, transform_system->getInRange(frame), coord), coord);
+            
+            auto intersecting = transform_system->getIntersecting(frame, i, transform_system->getInRange(frame), coord);
+            std::vector<EntityID> possible_colliders;
+            std::vector<EntityID>::iterator iter = intersecting.begin();
+
+            while ((iter = std::find_if(iter, intersecting.end(),[=](const EntityID& id){return coord.getComponent<PhysicsComponent>(id).id != nullptr;})) != intersecting.end()) {
+                possible_colliders.push_back(*iter);
+                iter++;
+            }
+
+            physics_system->doCollision(i, possible_colliders, coord);
+            
+            
             spritesheet_system->updateAnimation(i, deltaT, &win, coord);
         }
 
