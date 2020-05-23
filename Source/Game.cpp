@@ -34,7 +34,7 @@ namespace ChildrensTears {
             }
         }
 
-        AABB frame = {{win.getView().getCenter().x - win.getSize().y/2 - 100,win.getView().getCenter().y - win.getSize().y/2 - 100},{win.getSize().x + 100, win.getSize().y + 100}};
+        AABB frame = {{win.getView().getCenter().x - win.getSize().y,win.getView().getCenter().y - win.getSize().y},{win.getSize().x*2, win.getSize().y*2}};
             
         win.clear(sf::Color::White);
             
