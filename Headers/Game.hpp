@@ -12,7 +12,6 @@ namespace ChildrensTears {
         std::shared_ptr<CameraSystem> camera_system;
         std::shared_ptr<InputSystem> input_system;
         std::shared_ptr<SpritesheetAnimationSystem> spritesheet_system;
-        std::shared_ptr<StaticBackgroundSystem> static_bg_system;
     public:
         sf::RenderWindow win;
         Coordinator coord;

@@ -151,14 +151,9 @@ namespace ChildrensTears {
                 spritesheet->current_frame = spritesheet->min_frame;
             }
 
+            std::cout << col*spritesheet->texture_size.x << " " << row*spritesheet->texture_size.y << std::endl;
+            
             spritesheet->anim_time = 0;
-        }
-    }
-
-    void StaticBackgroundSystem::update(sf::View view, Coordinator& coord) {
-        for (auto& entity : entities) {
-            auto transform = &coord.getComponent<TransformComponent>(entity);
-            transform->position = {view.getCenter().x-view.getSize().x/2,view.getCenter().y-view.getSize().y/2};
         }
     }
 }

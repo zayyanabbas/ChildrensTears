@@ -41,7 +41,6 @@ namespace ChildrensTears {
         transform_system->setScreen(frame);
         transform_system->update(coord);
         input_system->update(win, coord);
-        static_bg_system->update(win.getView(), coord);
 
         for (auto& i : transform_system->getInRange(frame)) {
             camera_system->updateCameras(win, coord);
