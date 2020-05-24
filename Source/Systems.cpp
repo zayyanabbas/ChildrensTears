@@ -100,9 +100,11 @@ namespace ChildrensTears {
         return ret;
     }
 
-    void RenderSystem::drawRenderable(EntityID entity, sf::RenderTarget* renderArea, Coordinator& coord) {
+    void RenderSystem::update(EntityID entity, sf::RenderTarget* renderArea, float deltaT, Coordinator& coord) {
         auto transform = &coord.getComponent<TransformComponent>(entity);
         auto render    = &coord.getComponent<RenderComponent>(entity);
+
+        if(render->update) render->update(deltaT, coord);
 
         // Update position of the sprite
         render->sprite.setPosition(transform->position.x + render->pos_offset.x, transform->position.y + render->pos_offset.y);

@@ -23,7 +23,7 @@ namespace ChildrensTears {
 
     class RenderSystem : public bSystem {
     public:
-        void drawRenderable(EntityID id, sf::RenderTarget* renderArea, Coordinator& coord);
+        void update(EntityID id, sf::RenderTarget* renderArea, float delta_time, Coordinator& coord);
     };
 
     class InputSystem : public bSystem {

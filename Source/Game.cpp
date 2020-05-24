@@ -10,7 +10,6 @@ namespace ChildrensTears {
         camera_system = coord.registerSystem<CameraSystem>();
         input_system = coord.registerSystem<InputSystem>();
         spritesheet_system = coord.registerSystem<SpritesheetAnimationSystem>();
-        static_bg_system = coord.registerSystem<StaticBackgroundSystem>();
 
         coord.registerComponent<TransformComponent>();
         coord.registerComponent<RenderComponent>();
@@ -34,7 +33,7 @@ namespace ChildrensTears {
             }
         }
 
-        AABB frame = {{win.getView().getCenter().x - win.getSize().y/2 - 100,win.getView().getCenter().y - win.getSize().y/2 - 100},{win.getSize().x + 100, win.getSize().y + 100}};
+        AABB frame = {{win.getView().getCenter().x - win.getSize().y,win.getView().getCenter().y - win.getSize().y},{win.getSize().x * 4, win.getSize().y * 4}};
             
         win.clear(sf::Color::White);
             
@@ -44,7 +43,7 @@ namespace ChildrensTears {
 
         for (auto& i : transform_system->getInRange(frame)) {
             camera_system->updateCameras(win, coord);
-            render_system->drawRenderable(i, &win, coord);
+            render_system->update(i, &win, deltaT, coord);
             physics_system->update(i, deltaT, coord);
             
             auto intersecting = transform_system->getIntersecting(frame, i, transform_system->getInRange(frame), coord);

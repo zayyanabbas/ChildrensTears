@@ -10,7 +10,7 @@ namespace ChildrensTears {
     // Transform component
     // Contains position, size, scale, angle
     struct TransformComponent {
-        std::optional<std::string> tag;
+        std::string tag;
 
         Position position{0,0};
         Size size{0,0};
@@ -43,9 +43,11 @@ namespace ChildrensTears {
     // RenderComponent
     // Has the sprite and a pointer to a texture
     struct RenderComponent {
-        std::optional<std::string> tag;
+        std::string tag;
         
         Vec2<float> pos_offset{0,0};
+
+        std::function<void(float, Coordinator&)> update;
 
         std::shared_ptr<sf::Texture> texture;
         sf::Sprite sprite;
