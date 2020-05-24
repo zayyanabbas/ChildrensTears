@@ -151,8 +151,6 @@ namespace ChildrensTears {
                 spritesheet->current_frame = spritesheet->min_frame;
             }
 
-            std::cout << col*spritesheet->texture_size.x << " " << row*spritesheet->texture_size.y << std::endl;
-            
             spritesheet->anim_time = 0;
         }
     }
